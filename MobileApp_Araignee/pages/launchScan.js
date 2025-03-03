@@ -3,10 +3,17 @@ import React from 'react'
 
 const launchScan = () => {
   return (
-    <View>
+    <View style={styles.container}>
       <Text>launchScan</Text>
     </View>
   )
+}
+
+const styles = {
+  container:{
+    flex:1,
+    backgroundColor:'white'
+  }
 }
 
 export default launchScan

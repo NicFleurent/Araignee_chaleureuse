@@ -3,10 +3,17 @@ import React from 'react'
 
 const settings = () => {
   return (
-    <View>
+    <View style={styles.container}>
       <Text>settings</Text>
     </View>
   )
+}
+
+const styles = {
+  container:{
+    flex:1,
+    backgroundColor:'white'
+  }
 }
 
 export default settings

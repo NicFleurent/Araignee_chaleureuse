@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import home from './pages/home';
@@ -40,6 +40,9 @@ export default function App() {
 
   const scanStack = createNativeStackNavigator({
     initialRouteName:"launchScan",
+    screenOptions: {
+      headerShadowVisible:false
+    },
     screens:{
       launchScan: {
         screen: launchScan,
@@ -61,6 +64,7 @@ export default function App() {
       },
     }
   });
+
   const BottomTabs = createBottomTabNavigator({
     screenOptions: ({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
@@ -82,8 +86,15 @@ export default function App() {
       tabBarActiveTintColor: "#4B4E6D",
       tabBarInactiveTintColor: "lightgray",
       tabBarShowLabel: false,
-      // tabBarInactiveBackgroundColor: "white",
       tabBarLabelPosition: "beside-icon",
+      tabBarStyle: {
+        borderTopWidth: 0,
+        elevation:0
+      },
+      headerShadowVisible:false,
+      tabBarButton: (props) => (
+        <Pressable {...props} android_ripple={{foreground: false }} />
+      ),
     }),
     screens: {
       home: {
@@ -110,13 +121,7 @@ export default function App() {
    const RootStack = createNativeStackNavigator({
     initialRouteName: "Menu",
     screenOptions: {
-      headerStyle: {
-         backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
+      headerShadowVisible:false
     },
     screens: {
       Menu: {
@@ -146,12 +151,3 @@ export default function App() {
     <Navigation/>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
