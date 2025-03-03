@@ -11,8 +11,31 @@ import login from './pages/login';
 import signup from './pages/signup';
 import scan from './pages/scan';
 import closeScan from './pages/closeScan';
+import { db } from './api/firebase';
+import { useEffect } from 'react';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 
 export default function App() {
+  // useEffect(()=>{
+  //   const getPrefs = async () => {
+  //     const docRef = doc(db, "comfort_preferences","2DXgYow1rPELwUrwnM33");
+  //     const docSnap = await getDoc(docRef)
+  //     console.log(docSnap.data())
+  //   }
+  //   getPrefs();
+  // },[])
+
+  // useEffect(()=>{
+  //   const getPrefs = async () => {
+  //     const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
+  //     querySnapshot.forEach((doc) => {
+  //       console.log(`${doc.id} => ${doc.data()}`);
+  //       console.log(doc.data())
+  //     });
+  //   }
+  //   getPrefs();
+  // },[])
+
   const scanStack = createNativeStackNavigator({
     initialRouteName:"launchScan",
     screens:{
