@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import home from './pages/home';
 import launchScan from './pages/launchScan';
 import settings from './pages/settings';
@@ -14,6 +15,7 @@ import closeScan from './pages/closeScan';
 import { db } from './api/firebase';
 import { useEffect } from 'react';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { faGamepad, faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
 
 export default function App() {
   // useEffect(()=>{
@@ -64,23 +66,24 @@ export default function App() {
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
         if (route.name === "home") {
-          iconName = focused ? "home" : "home-outline";
+          iconName = faTemperatureLow;
         } else if (route.name === "scanStack") {
-          iconName = focused ? "bug" : "bug-outline";
+          iconName = faRobot;
         }
         else{
-          iconName = focused ? "cog" : "cog-outline";
+          iconName = faGear;
         }
-        return <Ionicons name={iconName} size={size} color={color} />;
+        return (
+          <View style={focused && {backgroundColor:'lightgray', padding:10, borderRadius:230}}>
+            <FontAwesomeIcon icon={iconName} size={size} color={color} />
+          </View>
+        );
       },
-      tabBarActiveTintColor: "green",
-      tabBarInactiveTintColor: "gray",
+      tabBarActiveTintColor: "#4B4E6D",
+      tabBarInactiveTintColor: "lightgray",
       tabBarShowLabel: false,
-      tabBarActiveBackgroundColor: "black",
-      tabBarInactiveBackgroundColor: "black",
       // tabBarInactiveBackgroundColor: "white",
       tabBarLabelPosition: "beside-icon",
-      animation: "shift",
     }),
     screens: {
       home: {
