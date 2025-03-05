@@ -142,12 +142,14 @@ export default function App() {
         screen: login,
         options: {
           title: t('auth.connexion'),
+          headerBackVisible:false
         }
       },
       signup: {
         screen: signup,
         options: {
           title: t('auth.signup'),
+          headerBackVisible:false
         }
       },
     },

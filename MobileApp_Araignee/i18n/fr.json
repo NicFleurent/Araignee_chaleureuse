@@ -9,7 +9,13 @@
   "input":{
     "email":"Adresse courriel",
     "password":"Mot de passe",
-    "passwordConfirm":"Confirmer le mot de passe"
+    "passwordConfirm":"Confirmer le mot de passe",
+    "error":{
+        "email_required":"L'adresse courriel est requise",
+        "email_invalid":"L'adresse courriel n'est pas valide",
+        "password_required":"Le mot de passe est requis",
+        "passwordConfirm_required":"Les mots de passe ne correspondent pas"
+      }
   },
   "home":{
     "title":"Accueil"
