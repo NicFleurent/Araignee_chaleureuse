@@ -2,8 +2,12 @@ import { View, Text, Image, Switch, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import StandardInput from '../components/StandardInput'
 import StandardButton from '../components/StandardButton';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const login = () => {
+  const navigation = useNavigation();
+  const {t} = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState([]);
@@ -14,21 +18,21 @@ const login = () => {
       <View style={styles.fullWidthContainer}>
         <Image source={require("../assets/spider-bot.png")} />
         <StandardInput
-          placeholder="Email"
+          placeholder={t('input.email')}
           value={email}
           onChangeText={setEmail}
           keyboardType='email-address'
           error={errors.errorEmail}
         />
         <StandardInput
-          placeholder="Mot de passe"
+          placeholder={t('input.password')}
           value={password}
           onChangeText={setPassword}
           error={errors.errorEmail}
           secureTextEntry={true}
         />
         <View style={styles.switchContainer}>
-          <Text style={styles.stayConnectedTxt}>Rester connecté</Text>
+          <Text style={styles.stayConnectedTxt}>{t('auth.stayConnected')}</Text>
           <Switch 
             value={stayConnected} 
             onValueChange={setStayConnected} 
@@ -40,16 +44,16 @@ const login = () => {
       </View>
       <View style={styles.fullWidthContainer}>
         <StandardButton
-          label="Connexion"
+          label={t('auth.connexion')}
         />
         <View style={styles.linkContainer}>
-          <Text>Vous n'avez pas de compte?</Text>
+          <Text>{t('auth.noAccount')}</Text>
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.link}
             //onPress={onPress}
           >
-            <Text style={styles.linkTxt}>Inscrivez-vous</Text>
+            <Text style={styles.linkTxt}>{t('auth.subscribe')}</Text>
           </TouchableOpacity>
         </View>
         

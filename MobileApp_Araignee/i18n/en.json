@@ -1,0 +1,13 @@
+{
+  "auth":{
+    "connexion":"Connexion",
+    "stayConnected":"Stay connected",
+    "noAccount":"You don't have an account?",
+    "subscribe":"Sign up"
+  },
+  "input":{
+    "email":"Email",
+    "password":"Password",
+    "passwordConfirm":"Confirm password"
+  }
+}

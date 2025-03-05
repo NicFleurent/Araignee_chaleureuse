@@ -1,0 +1,29 @@
+{
+  "auth":{
+    "connexion":"Connexion",
+    "signup":"Inscription",
+    "stayConnected":"Rester connecté",
+    "noAccount":"Vous n'avez pas de compte?",
+    "subscribe":"Inscrivez-vous"
+  },
+  "input":{
+    "email":"Adresse courriel",
+    "password":"Mot de passe",
+    "passwordConfirm":"Confirmer le mot de passe"
+  },
+  "home":{
+    "title":"Accueil"
+  },
+  "settings":{
+    "title":"Paramètres"
+  },
+  "launchScan":{
+    "title":"Scan de la pièce"
+  },
+  "scan":{
+    "title":"Scan"
+  },
+  "closeScan":{
+    "title":"Scan terminé"
+  }
+}

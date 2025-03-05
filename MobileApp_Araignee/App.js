@@ -15,9 +15,13 @@ import closeScan from './pages/closeScan';
 import { db } from './api/firebase';
 import { useEffect } from 'react';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-import { faGamepad, faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
+import "./i18n.js";
+import { useTranslation } from 'react-i18next';
 
 export default function App() {
+  const {t, i18n} = useTranslation();
+
   // useEffect(()=>{
   //   const getPrefs = async () => {
   //     const docRef = doc(db, "comfort_preferences","2DXgYow1rPELwUrwnM33");
@@ -47,19 +51,19 @@ export default function App() {
       launchScan: {
         screen: launchScan,
         options: {
-          title: "Scan de la pièce",
+          title: t('launchScan.title'),
         }
       },
       scan: {
         screen: scan,
         options: {
-          title: "Scan",
+          title: t('scan.title'),
         }
       },
       closeScan: {
         screen: closeScan,
         options: {
-          title: "Scan terminé",
+          title: t('closeScan.title'),
         }
       },
     }
@@ -101,7 +105,7 @@ export default function App() {
       home: {
         screen: home,
         options: {
-          title: "Page d'accueil",
+          title: t('home.title'),
         }
       },
       scanStack: {
@@ -113,7 +117,7 @@ export default function App() {
       settings: {
         screen: settings,
         options: {
-          title: "Paramètres",
+          title: t('home.settings'),
         }
       },
     },
@@ -137,13 +141,13 @@ export default function App() {
       login: {
         screen: login,
         options: {
-          title: "Connexion",
+          title: t('auth.connexion'),
         }
       },
       signup: {
         screen: signup,
         options: {
-          title: "Inscription",
+          title: t('auth.signup'),
         }
       },
     },
