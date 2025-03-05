@@ -66,6 +66,7 @@ export default function App() {
   });
 
   const BottomTabs = createBottomTabNavigator({
+    initialRouteName: "home",
     screenOptions: ({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
@@ -119,7 +120,7 @@ export default function App() {
   });
 
    const RootStack = createNativeStackNavigator({
-    initialRouteName: "Menu",
+    initialRouteName: "login",
     screenOptions: {
       headerShadowVisible:false
     },
