@@ -44,12 +44,17 @@ export default function App() {
       launchScan: {
         screen: launchScan,
         options: {
+          headerTitleAlign: "left",
           title: "Scan de la pièce",
+          headerTitleStyle:{
+            fontSize: 28
+          }
         }
       },
       scan: {
         screen: scan,
         options: {
+          headerTitleAlign: "left",
           title: "Scan",
         }
       },
