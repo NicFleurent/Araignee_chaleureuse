@@ -122,7 +122,10 @@ export default function App() {
    const RootStack = createNativeStackNavigator({
     initialRouteName: "login",
     screenOptions: {
-      headerShadowVisible:false
+      headerShadowVisible:false,
+      headerTitleStyle:{
+        fontSize:28
+      }
     },
     screens: {
       Menu: {
