@@ -27,7 +27,7 @@ const login = () => {
           routes:[
             {
               name:'Menu',
-              params:{screen:'home'}
+              params:{screen:'settings'}
             }
           ]
         })

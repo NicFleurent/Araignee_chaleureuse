@@ -117,7 +117,7 @@ export default function App() {
       settings: {
         screen: settings,
         options: {
-          title: t('home.settings'),
+          title: t('settings.title'),
         }
       },
     },
