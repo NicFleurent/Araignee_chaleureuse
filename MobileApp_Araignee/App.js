@@ -15,9 +15,13 @@ import closeScan from './pages/closeScan';
 import { db } from './api/firebase';
 import { useEffect } from 'react';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-import { faGamepad, faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
+import "./i18n.js";
+import { useTranslation } from 'react-i18next';
 
 export default function App() {
+  const {t, i18n} = useTranslation();
+
   // useEffect(()=>{
   //   const getPrefs = async () => {
   //     const docRef = doc(db, "comfort_preferences","2DXgYow1rPELwUrwnM33");
@@ -47,25 +51,26 @@ export default function App() {
       launchScan: {
         screen: launchScan,
         options: {
-          title: "Scan de la pièce",
+          title: t('launchScan.title'),
         }
       },
       scan: {
         screen: scan,
         options: {
-          title: "Scan",
+          title: t('scan.title'),
         }
       },
       closeScan: {
         screen: closeScan,
         options: {
-          title: "Scan terminé",
+          title: t('closeScan.title'),
         }
       },
     }
   });
 
   const BottomTabs = createBottomTabNavigator({
+    initialRouteName: "home",
     screenOptions: ({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
@@ -100,7 +105,7 @@ export default function App() {
       home: {
         screen: home,
         options: {
-          title: "Page d'accueil",
+          title: t('home.title'),
         }
       },
       scanStack: {
@@ -112,16 +117,19 @@ export default function App() {
       settings: {
         screen: settings,
         options: {
-          title: "Paramètres",
+          title: t('home.settings'),
         }
       },
     },
   });
 
    const RootStack = createNativeStackNavigator({
-    initialRouteName: "Menu",
+    initialRouteName: "login",
     screenOptions: {
-      headerShadowVisible:false
+      headerShadowVisible:false,
+      headerTitleStyle:{
+        fontSize:28
+      }
     },
     screens: {
       Menu: {
@@ -133,13 +141,15 @@ export default function App() {
       login: {
         screen: login,
         options: {
-          title: "Connexion",
+          title: t('auth.connexion'),
+          headerBackVisible:false
         }
       },
       signup: {
         screen: signup,
         options: {
-          title: "Inscription",
+          title: t('auth.signup'),
+          headerBackVisible:false
         }
       },
     },
