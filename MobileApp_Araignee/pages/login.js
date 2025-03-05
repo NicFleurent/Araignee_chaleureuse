@@ -1,11 +1,14 @@
 //TODO::Ajuster le responsive pour la tablette
 
 import { View, Text, Image, Switch, TouchableOpacity, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import StandardInput from '../components/StandardInput'
 import StandardButton from '../components/StandardButton';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { auth } from '../api/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { getLocalUser, saveLocalUser } from '../api/secureStore';
 
 const login = () => {
   const navigation = useNavigation();
@@ -15,14 +18,34 @@ const login = () => {
   const [errors, setErrors] = useState([]);
   const [stayConnected, setStayConnected] = useState(false);
 
+  useEffect(()=>{
+    const validateUser = async ()=>{
+      const user = await getLocalUser();
+      if(user){
+        navigation.reset({
+          index:0,
+          routes:[
+            {
+              name:'Menu',
+              params:{screen:'home'}
+            }
+          ]
+        })
+      }
+    }
+    validateUser();
+  },[])
+
   const handleLogin = async ()=>{
     if(validateForm()){
       try {
-        //Connexion avec Firebase
+        const result = await signInWithEmailAndPassword(auth, email, password)
+        console.log(result.user)
 
-        //Sauvegarder de la connexion si le rester connecté est coché
-        //SecureStore
-
+        if(stayConnected){
+          saveLocalUser(result.user)
+        }
+        
         navigation.reset({
           index:0,
           routes:[
@@ -129,7 +152,8 @@ const styles = {
     width:'100%',
     flexDirection:'row',
     alignItems:'center',
-    justifyContent:'flex-end'
+    justifyContent:'flex-end',
+    paddingRight:10
   },
   stayConnectedTxt:{
     marginRight:20,
