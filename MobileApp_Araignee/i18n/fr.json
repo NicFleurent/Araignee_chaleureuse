@@ -2,6 +2,7 @@
   "auth":{
     "connexion":"Connexion",
     "signup":"Inscription",
+    "logout":"Déconnexion",
     "stayConnected":"Rester connecté",
     "noAccount":"Vous n'avez pas de compte?",
     "alreadyAccount":"Vous avez déjà un compte?",
@@ -28,7 +29,11 @@
     "title":"Accueil"
   },
   "settings":{
-    "title":"Paramètres"
+    "title":"Paramètres",
+    "language":"Langues",
+    "temperature_unit":"Unité de mesure de la température",
+    "darkmode":"Thème sombre",
+    "delete_account":"Supprimer le compte"
   },
   "launchScan":{
     "title":"Scan de la pièce"
