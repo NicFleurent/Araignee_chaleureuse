@@ -1,24 +1,24 @@
 {
   "expo": {
-    "name": "MobileApp_Araignee",
-    "slug": "MobileApp_Araignee",
+    "name": "Araignée chaleureuse",
+    "slug": "Araignée chaleureuse",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/spider-bot.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/spider-bot.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#84DCC6"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/spider-bot.png",
+        "backgroundColor": "#84DCC6"
       },
       "package": "com.anonymous.MobileApp_Araignee"
     },

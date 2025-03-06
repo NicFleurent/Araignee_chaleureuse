@@ -28,7 +28,17 @@ const settings = () => {
         //console.log(user.uid)
       }
       getUser();
-    },[])
+    },[]);
+
+  const handleLanguageChange = (value)=>{
+    setLanguage(value);
+  }
+  const handleTempHumidChange = (value)=>{
+    setTemperatureUnit(value);
+  }
+  const handleDarkmodeChange = (value)=>{
+    setDarkMode(value);
+  }
 
   return (
     <View style={styles.container}>
@@ -37,20 +47,20 @@ const settings = () => {
           <StandardDropdown
             data={languageData}
             value={language}
-            onChange={setLanguage}
+            onChange={(item)=>handleLanguageChange(item.value)}
             placeholder={t('settings.language')}
           />
           <StandardDropdown
             data={temperatureUnitData}
             value={temperatureUnit}
-            onChange={setTemperatureUnit}
+            onChange={(item)=>handleTempHumidChange(item.value)}
             placeholder={t('settings.temperature_unit')}
           />
           <View style={styles.switchContainer}>
             <Text style={styles.stayConnectedTxt}>{t('settings.darkmode')}</Text>
             <Switch 
               value={darkMode} 
-              onValueChange={setDarkMode} 
+              onValueChange={(value)=>handleDarkmodeChange(value)} 
               trackColor={{false:'lightgray', true:'#84DCC6'}} 
               thumbColor={darkMode ? '#84DCC6' : 'gray'}
               style={{ transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }] }}
