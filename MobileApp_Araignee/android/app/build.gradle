@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.manefa.MobileApp_Araignee'
+    namespace 'com.anonymous.MobileApp_Araignee'
     defaultConfig {
-        applicationId 'com.manefa.MobileApp_Araignee'
+        applicationId 'com.anonymous.MobileApp_Araignee'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

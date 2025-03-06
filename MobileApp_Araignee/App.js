@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import home from './pages/home';
@@ -15,9 +15,13 @@ import closeScan from './pages/closeScan';
 import { db } from './api/firebase';
 import { useEffect } from 'react';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-import { faGamepad, faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
+import "./i18n.js";
+import { useTranslation } from 'react-i18next';
 
 export default function App() {
+  const {t, i18n} = useTranslation();
+
   // useEffect(()=>{
   //   const getPrefs = async () => {
   //     const docRef = doc(db, "comfort_preferences","2DXgYow1rPELwUrwnM33");
@@ -40,6 +44,9 @@ export default function App() {
 
   const scanStack = createNativeStackNavigator({
     initialRouteName:"launchScan",
+    screenOptions: {
+      headerShadowVisible:false
+    },
     screens:{
       launchScan: {
         screen: launchScan,
@@ -50,18 +57,20 @@ export default function App() {
       scan: {
         screen: scan,
         options: {
-          title: "Scan de la piece",
+          title: t('scan.title'),
         }
       },
       closeScan: {
         screen: closeScan,
         options: {
-          title: "Scan terminé",
+          title: t('closeScan.title'),
         }
       },
     }
   });
+
   const BottomTabs = createBottomTabNavigator({
+    initialRouteName: "home",
     screenOptions: ({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
@@ -82,8 +91,15 @@ export default function App() {
       tabBarActiveTintColor: "#4B4E6D",
       tabBarInactiveTintColor: "lightgray",
       tabBarShowLabel: false,
-      // tabBarInactiveBackgroundColor: "white",
       tabBarLabelPosition: "beside-icon",
+      tabBarStyle: {
+        borderTopWidth: 0,
+        elevation:0
+      },
+      headerShadowVisible:false,
+      tabBarButton: (props) => (
+        <Pressable {...props} android_ripple={{foreground: false }} />
+      ),
     }),
     screens: {
       home: {
@@ -101,22 +117,19 @@ export default function App() {
       settings: {
         screen: settings,
         options: {
-          title: "Paramètres",
+          title: t('settings.title'),
         }
       },
     },
   });
 
    const RootStack = createNativeStackNavigator({
-    initialRouteName: "Menu",
+    initialRouteName: "login",
     screenOptions: {
-      headerStyle: {
-         backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
+      headerShadowVisible:false,
+      headerTitleStyle:{
+        fontSize:28
+      }
     },
     screens: {
       Menu: {
@@ -128,13 +141,15 @@ export default function App() {
       login: {
         screen: login,
         options: {
-          title: "Connexion",
+          title: t('auth.connexion'),
+          headerBackVisible:false
         }
       },
       signup: {
         screen: signup,
         options: {
-          title: "Inscription",
+          title: t('auth.signup'),
+          headerBackVisible:false
         }
       },
     },
@@ -146,12 +161,3 @@ export default function App() {
     <Navigation/>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

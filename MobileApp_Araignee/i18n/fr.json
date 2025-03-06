@@ -1,0 +1,47 @@
+{
+  "auth":{
+    "connexion":"Connexion",
+    "signup":"Inscription",
+    "logout":"Déconnexion",
+    "stayConnected":"Rester connecté",
+    "noAccount":"Vous n'avez pas de compte?",
+    "alreadyAccount":"Vous avez déjà un compte?",
+    "subscribe":"Inscrivez-vous",
+    "connect":"Connectez-vous"
+  },
+  "input":{
+    "email":"Adresse courriel",
+    "password":"Mot de passe",
+    "passwordConfirm":"Confirmer le mot de passe",
+    "error":{
+        "email_required":"L'adresse courriel est requise",
+        "email_invalid":"L'adresse courriel n'est pas valide",
+        "password_required":"Le mot de passe est requis",
+        "password_min_length":"Le mot de passe doit contenir au moins 6 caractères",
+        "password_number":"Le mot de passe doit contenir au moins un chiffre",
+        "password_maj":"Le mot de passe doit contenir au moins une majuscule",
+        "password_min":"Le mot de passe doit contenir au moins une minuscule",
+        "password_special_caracter":"Le mot de passe doit contenir au moins un caractère spécial",
+        "passwordConfirm_required":"Les mots de passe ne correspondent pas"
+      }
+  },
+  "home":{
+    "title":"Accueil"
+  },
+  "settings":{
+    "title":"Paramètres",
+    "language":"Langues",
+    "temperature_unit":"Unité de mesure de la température",
+    "darkmode":"Thème sombre",
+    "delete_account":"Supprimer le compte"
+  },
+  "launchScan":{
+    "title":"Scan de la pièce"
+  },
+  "scan":{
+    "title":"Scan"
+  },
+  "closeScan":{
+    "title":"Scan terminé"
+  }
+}
