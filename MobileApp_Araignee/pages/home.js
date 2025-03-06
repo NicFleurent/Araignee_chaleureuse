@@ -1,46 +1,73 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import Configuration from '../composants/Configuration';
 
-const home = () => {
+const Home = () => {
   return (
-    <View style={styles.container}>
-      <Text style={{fontSize:36,fontWeight:"bold"}}>Accueil</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Accueil</Text>
 
-      <View style={{backgroundColor:"#84DCC6", alignItems:"center", marginTop: 80}}>
-        <Text style={{paddingVertical: 13, fontWeight:"bold", fontSize:20}}>Ajouter une configuration</Text>
-      </View>
+        <TouchableOpacity style={styles.addButton}>
+          <Text style={styles.addButtonText}>Ajouter une configuration</Text>
+        </TouchableOpacity>
 
-      <View style={{marginTop: 20}}>
-        <Configuration 
-        season="Été" 
-        temperature={-9} 
-        humidity={80} 
-        onDelete={() => console.log("Supprimé")} 
-        onEdit={() => console.log("Édité")}
-      />
+        <View style={styles.configurationsContainer}>
+          <Configuration
+            season="Été"
+            temperature={-9}
+            humidity={80}
+            onDelete={() => console.log("Supprimé")}
+            onEdit={() => console.log("Édité")}
+          />
+          <Configuration
+            season="Hiver"
+            temperature={-5}
+            humidity={70}
+            onDelete={() => console.log("Supprimé")}
+            onEdit={() => console.log("Édité")}
+          />
+        </View>
       </View>
-
-      <View style={{marginTop: 20}}>
-        <Configuration 
-        season="Été" 
-        temperature={-9} 
-        humidity={80} 
-        onDelete={() => console.log("Supprimé")} 
-        onEdit={() => console.log("Édité")}
-      />
-      </View>
-      
-    </View>
-  )
-}
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-  container:{
-    backgroundColor: "white",
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  content: {
     flex: 1,
     paddingHorizontal: 20,
-  }
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: '#4B4E6D',
+  },
+  addButton: {
+    backgroundColor: '#84DCC6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    marginTop: 80,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  addButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#4B4E6D',
+  },
+  configurationsContainer: {
+    marginTop: 20,
+  },
 });
 
-export default home
+export default Home;

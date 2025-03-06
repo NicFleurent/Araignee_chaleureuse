@@ -1,33 +1,75 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
 
-const launchScan = () => {
+// Constantes pour les couleurs et les styles récurrents
+const COLORS = {
+  primary: '#84DCC6',
+  textDark: '#4B4E6D',
+};
+
+const LaunchScan = () => {
+  const navigation = useNavigation();
+
+  const handleLaunchScan = () => {
+    // Toast.show({
+    //   type: 'error',
+    //   text1: 'Attention',
+    //   text2: 'Le robot doit être au sol',
+    // });
+
+    navigation.navigate('scan');
+  };
+
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={()=>{
-        Toast.show({
-          type: 'error',
-          text1: 'Attention',
-          text2: 'Le roboit doit etre au sol'
-        });
-      }}>
-        <View style={{backgroundColor:"#84DCC6", alignItems:"center"}}>
-            <Text style={{paddingVertical: 13, fontWeight:"bold", fontSize:20}}>Debut du scan</Text>
-        </View>
-      </TouchableOpacity>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Scan de la pièce</Text>
+
+      <View style={styles.content}>
+        <TouchableOpacity onPress={handleLaunchScan} style={styles.button}>
+          <Text style={styles.buttonText}>Lancer le scan</Text>
+        </TouchableOpacity>
+      </View>
+
       <Toast />
-    </View>
-  )
-}
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-  container:{
-    backgroundColor: "white",
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: COLORS.textDark,
+    paddingLeft: 20,
+    marginTop: 20,
+  },
+  content: {
     flex: 1,
     paddingHorizontal: 20,
-    justifyContent:"center"
-  }
+    justifyContent: 'center',
+  },
+  button: {
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.textDark,
+  },
 });
 
-export default launchScan
+export default LaunchScan;

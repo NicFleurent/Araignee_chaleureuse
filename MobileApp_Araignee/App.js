@@ -44,18 +44,13 @@ export default function App() {
       launchScan: {
         screen: launchScan,
         options: {
-          headerTitleAlign: "left",
-          title: "Scan de la pièce",
-          headerTitleStyle:{
-            fontSize: 28
-          }
+          headerShown: false
         }
       },
       scan: {
         screen: scan,
         options: {
-          headerTitleAlign: "left",
-          title: "Scan",
+          title: "Scan de la piece",
         }
       },
       closeScan: {
@@ -94,7 +89,7 @@ export default function App() {
       home: {
         screen: home,
         options: {
-          title: "Page d'accueil",
+          headerShown: false
         }
       },
       scanStack: {
