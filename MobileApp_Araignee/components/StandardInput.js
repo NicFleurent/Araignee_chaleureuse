@@ -39,7 +39,7 @@ const styles = {
     width:'100%',
     marginBottom:10,
     borderRadius:0,
-    paddingLeft:10
+    padding:10
   },
   inputError:{
     marginBottom:2
