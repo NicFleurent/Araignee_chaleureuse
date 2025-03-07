@@ -109,7 +109,7 @@ const settings = () => {
           <StandardButton
             label={t('settings.language_change')}
             color="green"
-            onPress={publishTest} //() => openLanguageChangeAlert(language)
+            onPress={() => openLanguageChangeAlert(language)} 
           />
           <StandardDropdown
             data={temperatureUnitData}
