@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, Switch } from 'react-native'
+import { View, Text, ScrollView, Image, Switch, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,7 @@ import StandardDropdown from '../components/StandardDropdown';
 
 const settings = () => {
   const navigation = useNavigation();
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   const [language, setLanguage] = useState("");
   const [temperatureUnit, setTemperatureUnit] = useState("");
   const [darkMode, setDarkMode] = useState(false);
@@ -30,9 +30,25 @@ const settings = () => {
       getUser();
     },[]);
 
-  const handleLanguageChange = (value)=>{
-    setLanguage(value);
+  const openLanguageChangeAlert = (item)=>{
+    if(item)
+      Alert.alert(t('settings.language_confirm_title'),t('settings.language_reload_warning'),[
+        {
+          text: t('no'),
+          onPress: () => {},
+        },
+        {
+          text: t('yes'),
+          onPress: () => {handleLanguageChange(item.value)}
+        }
+        
+      ]);
   }
+
+  const handleLanguageChange = (value)=>{
+    i18n.changeLanguage(value);
+  }
+
   const handleTempHumidChange = (value)=>{
     setTemperatureUnit(value);
   }
@@ -47,8 +63,13 @@ const settings = () => {
           <StandardDropdown
             data={languageData}
             value={language}
-            onChange={(item)=>handleLanguageChange(item.value)}
+            onChange={setLanguage}
             placeholder={t('settings.language')}
+          />
+          <StandardButton
+            label={t('settings.language_change')}
+            color="green"
+            onPress={()=>openLanguageChangeAlert(language)}
           />
           <StandardDropdown
             data={temperatureUnitData}
