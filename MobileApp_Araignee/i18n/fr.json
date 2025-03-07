@@ -1,4 +1,6 @@
 {
+  "yes":"Oui",
+  "no":"Non",
   "auth":{
     "connexion":"Connexion",
     "signup":"Inscription",
@@ -31,6 +33,9 @@
   "settings":{
     "title":"Paramètres",
     "language":"Langues",
+    "language_change":"Changer la langue",
+    "language_confirm_title":"Changement de langue",
+    "language_reload_warning":"Si vous changez la langue, l'application redémarrera. Voulez-vous continuer?",
     "temperature_unit":"Unité de mesure de la température",
     "darkmode":"Thème sombre",
     "delete_account":"Supprimer le compte"
