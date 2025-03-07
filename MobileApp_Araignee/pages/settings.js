@@ -9,7 +9,6 @@ import init from 'react_native_mqtt';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const settings = () => {
-  const clientRef = useRef(null);
 
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
@@ -17,21 +16,22 @@ const settings = () => {
   const [temperatureUnit, setTemperatureUnit] = useState("");
   const [darkMode, setDarkMode] = useState(false);
 
+  const clientRef = useRef(null);
   function onConnect() {
     console.log("onConnect");
     clientRef.current.subscribe("spider_object")
   }
-
   function onConnectionLost(responseObject) {
     if (responseObject.errorCode !== 0) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
     }
   }
-
   function onMessageArrived(message) {
     console.log("onMessageArrived:" + message.payloadString);
   }
-  9
+  const publishTest = ()=>{
+    clientRef.current.publish("spider_app", "test",0,false)
+  }
   useEffect(() => {
     init({
       size: 10000,
@@ -43,15 +43,11 @@ const settings = () => {
     });
  
     clientRef.current = new Paho.MQTT.Client("172.16.207.219", 9001, "uname");
- 
     clientRef.current.onConnectionLost = onConnectionLost;
     clientRef.current.onMessageArrived = onMessageArrived;
     clientRef.current.connect({ onSuccess:onConnect, useSSL: false });
   }, []);
 
-  const publishTest = ()=>{
-    clientRef.current.publish("spider_app", "test",0,false)
-  }
 
   const languageData = [
     { label: 'Français', value: 'fr' },
