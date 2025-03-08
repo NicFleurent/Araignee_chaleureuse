@@ -9,19 +9,47 @@ import { useTranslation } from 'react-i18next';
 import { auth } from '../api/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { getLocalUser, saveLocalUser } from '../api/secureStore';
+import useAsyncStorage from '../hooks/useAsyncStorage';
+import { useDispatch } from 'react-redux';
+import { setDarkMode, setTemperatureHumidityUnit } from '../stores/sliceParameters';
+import Toast from 'react-native-toast-message';
 
-const login = () => {
+const login = ({route}) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const {t} = useTranslation();
+  const {getLocalData} = useAsyncStorage();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState([]);
   const [stayConnected, setStayConnected] = useState(false);
 
+  const getParameters = async (user)=>{
+    try {
+      const tempHumidUnit = await getLocalData(`${user.uid}_tempHumidUnit`);
+      const darkmode = await getLocalData(`${user.uid}_darkmode`);
+      if(tempHumidUnit)
+        dispatch(setTemperatureHumidityUnit(tempHumidUnit));
+      if(darkmode)
+        dispatch(setDarkMode(darkmode));
+
+      return true
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: t('error'),
+        text2: error,
+      });
+    }
+  }
+
   useEffect(()=>{
     const validateUser = async ()=>{
       const user = await getLocalUser();
       if(user){
+        const result = await getParameters(user);
         navigation.reset({
           index:0,
           routes:[
@@ -36,16 +64,27 @@ const login = () => {
     validateUser();
   },[])
 
+  useEffect(()=>{
+    if(route.params){
+      if(route.params.success){
+        Toast.show({
+          type: 'success',
+          text1: route.params.success
+        });
+      }
+    }
+  },[route])
+
   const handleLogin = async ()=>{
     if(validateForm()){
       try {
         const result = await signInWithEmailAndPassword(auth, email, password)
-        console.log(result.user)
 
         if(stayConnected){
           saveLocalUser(result.user)
         }
         
+        await getParameters(result.user);
         navigation.reset({
           index:0,
           routes:[
@@ -56,8 +95,18 @@ const login = () => {
           ]
         })
       } catch (error) {
-        //Toast?
+        let message;
+        if(error.message = "Firebase: Error (auth/email-already-in-use).")
+          message = t('auth.connexion_failed_credentials')
+        else
+          message = t('auth.connexion_failed')
+
         console.log(error);
+        Toast.show({
+          type: 'error',
+          text1: t('error'),
+          text2: message,
+        });
       }
     }
   }
@@ -127,6 +176,7 @@ const login = () => {
           </TouchableOpacity>
         </View>
       </View>
+      <Toast position='top' bottomOffset={20} />
     </View>
   )
 }
