@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const parametersSlice = createSlice({
   name: "sliceParameters",
   initialState: {
-    temperature_humidity_unit:"celcius",
+    temperature_humidity_unit:undefined,
     darkmode:false
   },
   reducers: {

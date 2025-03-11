@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import Configuration from '../composants/Configuration';
+import { useSelector } from 'react-redux';
 
 const Home = () => {
+  const temperatureUnit = useSelector((state) => state.parameters.temperature_humidity_unit);
   return (
     <SafeAreaView style={styles.container}>
+      {temperatureUnit == "farenheit" && <Text>60°F</Text> || <Text>20°C</Text>}
       <View style={styles.content}>
         <Text style={styles.title}>Accueil</Text>
 

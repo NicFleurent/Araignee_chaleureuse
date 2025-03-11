@@ -18,9 +18,11 @@ import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
 import "./i18n.js";
 import { useTranslation } from 'react-i18next';
+import { Provider } from 'react-redux';
+import store from "./stores/store.js"
 
 export default function App() {
-  const {t, i18n} = useTranslation();
+  const {t} = useTranslation();
 
   // useEffect(()=>{
   //   const getPrefs = async () => {
@@ -158,6 +160,8 @@ export default function App() {
   const Navigation = createStaticNavigation(RootStack);
 
   return (
-    <Navigation/>
+    <Provider store={store}>
+      <Navigation/>
+    </Provider>
   );
 }

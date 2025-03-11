@@ -1,13 +1,57 @@
 {
-  "auth":{
-    "connexion":"Connexion",
-    "stayConnected":"Stay connected",
-    "noAccount":"You don't have an account?",
-    "subscribe":"Sign up"
+  "yes": "Yes",
+  "no": "No",
+  "auth": {
+    "connexion": "Login",
+    "signup": "Sign up",
+    "logout": "Logout",
+    "stayConnected": "Stay connected",
+    "noAccount": "Don't have an account?",
+    "alreadyAccount": "Already have an account?",
+    "subscribe": "Sign up",
+    "connect": "Log in"
   },
-  "input":{
-    "email":"Email",
-    "password":"Password",
-    "passwordConfirm":"Confirm password"
+  "input": {
+    "email": "Email address",
+    "password": "Password",
+    "passwordConfirm": "Confirm password",
+    "error": {
+      "email_required": "Email address is required",
+      "email_invalid": "Invalid email address",
+      "password_required": "Password is required",
+      "password_min_length": "Password must be at least 6 characters long",
+      "password_number": "Password must contain at least one number",
+      "password_maj": "Password must contain at least one uppercase letter",
+      "password_min": "Password must contain at least one lowercase letter",
+      "password_special_caracter": "Password must contain at least one special character",
+      "passwordConfirm_required": "Passwords do not match"
+    }
+  },
+  "home": {
+    "title": "Home"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Languages",
+    "language_change": "Change language",
+    "language_confirm_title": "Language change",
+    "language_reload_warning": "If you change the language, the application will restart. Do you want to continue?",
+    "language_choose_one": "Please choose a language",
+    "temperature_unit": "Temperature unit",
+    "darkmode": "Dark mode",
+    "delete_account": "Delete account"
+  },
+  "launchScan": {
+    "title": "Room scan"
+  },
+  "scan": {
+    "title": "Scan"
+  },
+  "closeScan": {
+    "title": "Scan complete"
+  },
+  "asyncStorage": {
+    "save_error": "An error occurred while saving locally",
+    "get_error": "An error occurred while retrieving local data"
   }
 }

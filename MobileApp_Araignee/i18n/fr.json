@@ -1,4 +1,7 @@
 {
+  "error":"Erreur",
+  "yes":"Oui",
+  "no":"Non",
   "auth":{
     "connexion":"Connexion",
     "signup":"Inscription",
@@ -7,7 +10,11 @@
     "noAccount":"Vous n'avez pas de compte?",
     "alreadyAccount":"Vous avez déjà un compte?",
     "subscribe":"Inscrivez-vous",
-    "connect":"Connectez-vous"
+    "connect":"Connectez-vous",
+    "connexion_failed":"La connexion à échouée",
+    "connexion_failed_credentials":"L'adresse courriel ou le mot de passe est invalide",
+    "signup_failed":"L'inscription à échouée",
+    "signup_failed_email_taken":"L'adresse courriel est déjà prise"
   },
   "input":{
     "email":"Adresse courriel",
@@ -31,9 +38,19 @@
   "settings":{
     "title":"Paramètres",
     "language":"Langues",
+    "language_change":"Changer la langue",
+    "language_confirm_title":"Changement de langue",
+    "language_reload_warning":"Si vous changez la langue, l'application redémarrera. Voulez-vous continuer?",
+    "language_choose_one":"Veuiller choisir une langue",
+    "language_already_chosen":"Cette langue est déjà sélectionnée",
     "temperature_unit":"Unité de mesure de la température",
     "darkmode":"Thème sombre",
-    "delete_account":"Supprimer le compte"
+    "delete_account":"Supprimer le compte",
+    "logout_success":"Déconnexion réussie",
+    "logout_error":"La déconnexion à échouée",
+    "delete_account_success":"Suppression du compte réussie",
+    "delete_account_modal_text":"Entrer votre mot de passe pour pouvoir supprimer votre compte",
+    "delete_account_error":"La suppression à échouée"
   },
   "launchScan":{
     "title":"Scan de la pièce"
@@ -43,5 +60,9 @@
   },
   "closeScan":{
     "title":"Scan terminé"
+  },
+  "asyncStorage":{
+    "save_error":"Une erreur est survenue lors de la sauvegarde locale",
+    "get_error":"Une erreur est survenue lors de la récupération de données locale"
   }
 }

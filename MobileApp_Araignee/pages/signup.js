@@ -9,6 +9,7 @@ import StandardButton from '../components/StandardButton';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../api/firebase';
 import { saveLocalUser } from '../api/secureStore';
+import Toast from 'react-native-toast-message';
 
 const signup = () => {
   const navigation = useNavigation();
@@ -39,8 +40,18 @@ const signup = () => {
           ]
         })
       } catch (error) {
-        //Toast?
+        let message;
+        if(error.message = "Firebase: Error (auth/email-already-in-use).")
+          message = t('auth.signup_failed_email_taken')
+        else
+          message = t('auth.signup_failed')
+
         console.log(error);
+        Toast.show({
+          type: 'error',
+          text1: t('error'),
+          text2: message,
+        });
       }
     }
   }
@@ -133,6 +144,7 @@ const signup = () => {
           </TouchableOpacity>
         </View>
       </View>
+      <Toast position='top' bottomOffset={20} />
     </View>
   )
 }

@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import noteReducer from './sliceNote'
+import parametersReducer from './sliceParameters'
 
 const store = configureStore({
   reducer: {
-    note: noteReducer
+    parameters: parametersReducer
   }
 })
 
