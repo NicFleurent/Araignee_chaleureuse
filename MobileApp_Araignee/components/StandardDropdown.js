@@ -2,13 +2,14 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
 
-const StandardDropdown = ({data, value, onChange, placeholder}) => {
+const StandardDropdown = ({data, value, onChange, placeholder, darkMode}) => {
+  console.log(darkMode);
   return (
     <View style={styles.container}>
       <Dropdown
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
+        style={[styles.dropdown, darkMode && styles.dropdownDarkmode]}
+        placeholderStyle={[styles.placeholderStyle, darkMode && styles.placeholderStyleDarkMode]}
+        selectedTextStyle={[styles.selectedTextStyle, darkMode && styles.selectedTextStyleDarkmode]}
         data={data}
         maxHeight={300}
         labelField="label"
@@ -32,13 +33,22 @@ const styles = {
     borderWidth: 2,
     paddingLeft:10
   },
+  dropdownDarkmode:{
+    borderColor:'#fff'
+  },
   placeholderStyle: {
     fontSize: 14,
     color:'gray'
   },
+  placeholderStyleDarkMode:{
+    color:'#fff'
+  },
   selectedTextStyle: {
     fontSize: 14,
     color:'#4B4E6D'
+  },
+  selectedTextStyleDarkmode:{
+    color:'#fff'
   },
 };
 

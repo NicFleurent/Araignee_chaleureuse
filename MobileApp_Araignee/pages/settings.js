@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image, Switch, Alert, Modal, Button } from 'react-native'
+import { View, Text, ScrollView, Image, Switch, Alert, Modal, Button, StatusBar } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -31,39 +31,6 @@ const settings = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState([]);
 
-  // const clientRef = useRef(null);
-  // function onConnect() {
-  //   console.log("onConnect");
-  //   clientRef.current.subscribe("spider_object")
-  // }
-  // function onConnectionLost(responseObject) {
-  //   if (responseObject.errorCode !== 0) {
-  //     console.log("onConnectionLost:" + responseObject.errorMessage);
-  //   }
-  // }
-  // function onMessageArrived(message) {
-  //   console.log("onMessageArrived:" + message.payloadString);
-  // }
-  // const publishTest = ()=>{
-  //   clientRef.current.publish("spider_app", "test",0,false)
-  // }
-  // useEffect(() => {
-  //   init({
-  //     size: 10000,
-  //     storageBackend: AsyncStorage,
-  //     defaultExpires: 1000 * 3600 * 24,
-  //     enableCache: true,
-  //     reconnect: true,
-  //     sync: {},
-  //   });
- 
-  //   clientRef.current = new Paho.MQTT.Client("172.16.207.219", 9001, "uname");
-  //   clientRef.current.onConnectionLost = onConnectionLost;
-  //   clientRef.current.onMessageArrived = onMessageArrived;
-  //   clientRef.current.connect({ onSuccess:onConnect, useSSL: false });
-  // }, []);
-
-
   const languageData = [
     { label: 'Français', value: 'fr' },
     { label: 'English', value: 'en' },
@@ -80,6 +47,27 @@ const settings = () => {
     }
     getUser();
   }, []);
+
+  useEffect(() => {
+    if(darkMode)
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#15202B',
+        },
+        headerTintColor:'#fff',
+        tabBarActiveBackgroundColor: "#15202B",
+        tabBarInactiveBackgroundColor: "#15202B",
+      });
+    else
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#fff',
+        },
+        headerTintColor:'#000',
+        tabBarActiveBackgroundColor: "#fff",
+        tabBarInactiveBackgroundColor: "#fff",
+      });
+  }, [navigation, darkMode]);
 
   useEffect(() => {
     const getLocalLanguage = async () => {
@@ -244,7 +232,7 @@ const settings = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, darkMode && styles.containerDarkmode]}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.fullWidthContainer}>
           <StandardDropdown
@@ -252,12 +240,14 @@ const settings = () => {
             value={temperatureUnit}
             onChange={(item) => handleTempHumidChange(item.value)}
             placeholder={t('settings.temperature_unit')}
+            darkMode={darkMode}
           />
           <StandardDropdown
             data={languageData}
             value={language}
             onChange={setLanguage}
             placeholder={t('settings.language')}
+            darkMode={darkMode}
           />
           <StandardButton
             label={t('settings.language_change')}
@@ -265,7 +255,7 @@ const settings = () => {
             onPress={openLanguageChangeAlert} 
           />
           <View style={styles.switchContainer}>
-            <Text style={styles.stayConnectedTxt}>{t('settings.darkmode')}</Text>
+            <Text style={[styles.stayConnectedTxt, darkMode && styles.stayConnectedTxtDarkmode]}>{t('settings.darkmode')}</Text>
             <Switch
               value={darkMode}
               onValueChange={(value) => handleDarkmodeChange(value)}
@@ -325,7 +315,10 @@ const styles = {
     backgroundColor: 'white',
     padding: 20,
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+  },
+  containerDarkmode:{
+    backgroundColor:'#15202B'
   },
   scrollView: {
     alignItems: 'center',
@@ -347,6 +340,9 @@ const styles = {
     marginRight: 20,
     fontSize: 16,
     fontWeight: '700'
+  },
+  stayConnectedTxtDarkmode:{
+    color:'#fff'
   },
   buttonContainer: {
     width: '100%',
