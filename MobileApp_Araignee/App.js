@@ -53,7 +53,7 @@ export default function App() {
       launchScan: {
         screen: launchScan,
         options: {
-          title: t('launchScan.title'),
+          headerShown: false
         }
       },
       scan: {
@@ -107,7 +107,7 @@ export default function App() {
       home: {
         screen: home,
         options: {
-          title: t('home.title'),
+          headerShown: false
         }
       },
       scanStack: {
