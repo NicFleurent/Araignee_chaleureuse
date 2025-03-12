@@ -1,13 +1,66 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
 import Configuration from '../composants/Configuration';
 import { useSelector } from 'react-redux';
+import { collection, getDocs   } from 'firebase/firestore';
+import { db } from '../api/firebase';
+import useBD from '../hooks/useBD'; 
 
 const Home = () => {
+  const [tempPrefs, setTempsPrefs] = useState([]);
+  const { prefs, getPrefsLocal, ajouterPrefsLocal, supprimerPrefsLocal, supprimerToutPrefsLocal } = useBD(); 
+
+  useEffect(() => {
+    const getPrefs = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
+        const list = [];
+        supprimerToutPrefsLocal();
+        querySnapshot.forEach((doc) => {
+          const data = { id: doc.id, ...doc.data() };
+          list.push(data);
+          ajouterPrefsLocal(data.active, data.humidity, data.name, data.temperature);
+        });
+        setTempsPrefs(list);
+      } catch (error) {
+        console.log("Erreur lors de la récupération : " + error);
+        getPrefsLocal();
+        setTempsPrefs(prefs);
+      }
+    };
+
+    getPrefs();
+  }, []);
+
+  const deletePrefs = async (id) => {
+    try {
+      await deleteDoc(doc(db, "comfort_preferences", id));
+
+      console.log("Document supprimé avec succès");
+      supprimerPrefsLocal(id);
+      getPrefs(); 
+    } catch (error) {
+      console.log("Erreur lors de la suppression : " + error);
+    }
+  };
+
   const temperatureUnit = useSelector((state) => state.parameters.temperature_humidity_unit);
+
+  const renderItem = ({ item }) => (
+    <Configuration
+      season={item.name}
+      temperature={item.temperature}
+      humidity={item.humidity}
+      isActive={item.active}
+      onDelete={() =>{
+        deletePrefs(item.id);
+      }}
+      onEdit={() => console.log("Editer : ", item.id)}
+    />
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      {temperatureUnit == "farenheit" && <Text>60°F</Text> || <Text>20°C</Text>}
       <View style={styles.content}>
         <Text style={styles.title}>Accueil</Text>
 
@@ -16,19 +69,11 @@ const Home = () => {
         </TouchableOpacity>
 
         <View style={styles.configurationsContainer}>
-          <Configuration
-            season="Été"
-            temperature={-9}
-            humidity={80}
-            onDelete={() => console.log("Supprimé")}
-            onEdit={() => console.log("Édité")}
-          />
-          <Configuration
-            season="Hiver"
-            temperature={-5}
-            humidity={70}
-            onDelete={() => console.log("Supprimé")}
-            onEdit={() => console.log("Édité")}
+          <FlatList
+            data={tempPrefs}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id} 
+            ListEmptyComponent={<Text>Aucune configuration trouvée.</Text>}
           />
         </View>
       </View>
@@ -56,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 15,
-    marginTop: 80,
+    marginTop: 40,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

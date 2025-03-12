@@ -1,9 +1,7 @@
-import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native';
 
-// Constantes pour les couleurs et les styles récurrents
 const COLORS = {
   primary: '#84DCC6',
   textDark: '#4B4E6D',
@@ -31,7 +29,6 @@ const LaunchScan = () => {
           <Text style={styles.buttonText}>Lancer le scan</Text>
         </TouchableOpacity>
       </View>
-
       <Toast />
     </SafeAreaView>
   );

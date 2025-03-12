@@ -11,7 +11,7 @@ const COLORS = {
   textDark: '#4B4E6D',
 };
 
-const Configuration = ({ season, temperature, humidity, onDelete, onEdit }) => {
+const Configuration = ({ season, temperature, humidity, isActive ,onDelete, onEdit }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -23,9 +23,17 @@ const Configuration = ({ season, temperature, humidity, onDelete, onEdit }) => {
       </View>
 
       <View style={styles.footer}>
-        <View style={styles.status}>
-          <Text style={styles.statusText}>Actif</Text>
-        </View>
+        {isActive ?
+        (
+          <View style={styles.statusActive}>
+            <Text style={styles.statusText}>Actif</Text>
+          </View>
+        ) : (
+          <View style={styles.statusNotActive}>
+            <Text style={styles.statusText}>Inactif</Text>
+          </View>
+        )}
+        
 
         <View style={styles.actions}>
           <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
@@ -79,8 +87,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  status: {
+  statusActive: {
     backgroundColor: COLORS.backgroundLight,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+  },
+  statusNotActive: {
+    backgroundColor: COLORS.dangerLight,
     paddingVertical: 8,
     paddingHorizontal: 15,
   },
