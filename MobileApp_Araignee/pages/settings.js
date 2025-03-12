@@ -44,7 +44,7 @@ const settings = () => {
   useEffect(() => {
     const getUser = async () => {
       const user = await getLocalUser();
-      setUser(user);
+      setUser(user.data);
     }
     getUser();
   }, []);

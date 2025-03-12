@@ -17,7 +17,7 @@ const login = ({route}) => {
   const {height, width} = useWindowDimensions();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   const {getLocalData} = useAsyncStorage();
   const isTablet = useSelector((state) => state.screen.isTablet);
   const darkMode = useSelector((state) => state.parameters.darkmode);
@@ -29,20 +29,21 @@ const login = ({route}) => {
 
   const getParameters = async (user)=>{
     try {
-      console.log(user.uid)
+      const language = await getLocalData(`${user.uid}_language`);
       const tempHumidUnit = await getLocalData(`${user.uid}_tempHumidUnit`);
       const darkmode = await getLocalData(`${user.uid}_darkmode`);
-      console.log(tempHumidUnit)
-      console.log(darkmode)
       if(tempHumidUnit)
         dispatch(setTemperatureHumidityUnit(tempHumidUnit));
       else
         dispatch(setTemperatureHumidityUnit(undefined));
 
-      if(darkmode)
+      if(darkmode != undefined)
         dispatch(setDarkMode(darkmode));
       else
-        dispatch(setTemperatureHumidityUnit(false));
+        dispatch(setDarkMode(false));
+
+      if(language && language != i18n.language)
+        i18n.changeLanguage(language);
 
       return true
     } catch (error) {
