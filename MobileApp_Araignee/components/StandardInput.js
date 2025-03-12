@@ -8,15 +8,17 @@ const StandardInput = ({
   keyboardType,
   secureTextEntry,
   error, 
-  removeBottomMargin
+  removeBottomMargin,
+  darkMode
 }) => {
   return (
     <View style={styles.container}>
       <TextInput
         placeholder={placeholder}
+        placeholderTextColor={darkMode ? "#fff" : "gray"}
         value={value}
         onChangeText={onChangeText}
-        style={[styles.input, removeBottomMargin && styles.removeBottomMargin, error && styles.inputError]} 
+        style={[styles.input, darkMode && styles.inputDarkmode, removeBottomMargin && styles.removeBottomMargin, error && styles.inputError]} 
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
       />
@@ -40,6 +42,11 @@ const styles = {
     marginBottom:10,
     borderRadius:0,
     padding:10
+  },
+  inputDarkmode:{
+    backgroundColor:'15202B',
+    borderColor:"#fff",
+    color:'#fff'
   },
   inputError:{
     marginBottom:2
