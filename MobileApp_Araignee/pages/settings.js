@@ -22,6 +22,7 @@ const settings = () => {
   const {saveLocalData, getLocalData} = useAsyncStorage();
   const temperatureUnit = useSelector((state) => state.parameters.temperature_humidity_unit);
   const darkMode = useSelector((state) => state.parameters.darkmode);
+  const isTablet = useSelector((state) => state.screen.isTablet);
 
   const { t, i18n } = useTranslation();
   const [user, setUser] = useState({});
@@ -232,7 +233,7 @@ const settings = () => {
   }
 
   return (
-    <View style={[styles.container, darkMode && styles.containerDarkmode]}>
+    <View style={[styles.container, darkMode && styles.containerDarkmode, isTablet && styles.containerTablet]}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.fullWidthContainer}>
           <StandardDropdown
@@ -316,6 +317,9 @@ const styles = {
     padding: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  containerTablet:{
+    padding: 150
   },
   containerDarkmode:{
     backgroundColor:'#15202B'

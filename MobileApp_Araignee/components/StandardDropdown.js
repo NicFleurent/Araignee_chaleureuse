@@ -3,7 +3,6 @@ import React from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
 
 const StandardDropdown = ({data, value, onChange, placeholder, darkMode}) => {
-  console.log(darkMode);
   return (
     <View style={styles.container}>
       <Dropdown

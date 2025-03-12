@@ -1,6 +1,6 @@
 //TODO::Ajuster le responsive pour la tablette
 
-import { View, Text, Image, Switch, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, Image, Switch, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import StandardInput from '../components/StandardInput'
 import StandardButton from '../components/StandardButton';
@@ -13,8 +13,10 @@ import useAsyncStorage from '../hooks/useAsyncStorage';
 import { useDispatch } from 'react-redux';
 import { setDarkMode, setTemperatureHumidityUnit } from '../stores/sliceParameters';
 import Toast from 'react-native-toast-message';
+import { defineScreen } from '../stores/sliceScreen';
 
 const login = ({route}) => {
+  const {height, width} = useWindowDimensions();
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {t} = useTranslation();
@@ -74,6 +76,19 @@ const login = ({route}) => {
       }
     }
   },[route])
+  
+  useEffect(()=>{
+    setScreen(height, width);
+  }, [height, width])
+
+  const setScreen = (height, width)=>{
+    const screen = {
+      height:height,
+      width:width
+    }
+
+    dispatch(defineScreen(screen));
+  }
 
   const handleLogin = async ()=>{
     if(validateForm()){
