@@ -20,6 +20,9 @@
     "email":"Adresse courriel",
     "password":"Mot de passe",
     "passwordConfirm":"Confirmer le mot de passe",
+    "name":"Nom",
+    "temperature":"Température",
+    "humidity":"Humidité",
     "error":{
         "email_required":"L'adresse courriel est requise",
         "email_invalid":"L'adresse courriel n'est pas valide",
@@ -29,8 +32,17 @@
         "password_maj":"Le mot de passe doit contenir au moins une majuscule",
         "password_min":"Le mot de passe doit contenir au moins une minuscule",
         "password_special_caracter":"Le mot de passe doit contenir au moins un caractère spécial",
-        "passwordConfirm_required":"Les mots de passe ne correspondent pas"
+        "passwordConfirm_required":"Les mots de passe ne correspondent pas",
+        "name_required":"Le nom est requis",
+        "temperature_required":"La température est requise",
+        "temperature_invalid":"Un seul nombre accepté après la décimale",
+        "humidity_required":"L'humidité est requise",
+        "humidity_invalid":"Entrer un nombre entier entre 0 et 100"
       }
+  },
+  "button":{
+    "cancel":"Annuler",
+    "save":"Sauvegarder"
   },
   "home":{
     "title":"Accueil"
@@ -60,6 +72,11 @@
   },
   "closeScan":{
     "title":"Scan terminé"
+  },
+  "addUpdate":{
+    "title":"Ajouter une configuration",
+    "activate":"Mettre active",
+    "error_add":"Échec de l'ajout"
   },
   "asyncStorage":{
     "save_error":"Une erreur est survenue lors de la sauvegarde locale",

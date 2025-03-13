@@ -65,8 +65,7 @@ const login = ({route}) => {
           index:0,
           routes:[
             {
-              name:'Menu',
-              params:{screen:'settings'}
+              name:'addUpdateTempPrefs',
             }
           ]
         })

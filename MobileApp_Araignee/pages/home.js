@@ -1,36 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
 import Configuration from '../composants/Configuration';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { collection, getDocs   } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import useBD from '../hooks/useBD'; 
+import { useNavigation } from '@react-navigation/native';
+import { setRefreshHome } from '../stores/sliceRefresh';
 
 const Home = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const refreshHome = useSelector((state) => state.refresh.refreshHome)
   const [tempPrefs, setTempsPrefs] = useState([]);
   const { prefs, getPrefsLocal, ajouterPrefsLocal, supprimerPrefsLocal, supprimerToutPrefsLocal } = useBD(); 
 
   useEffect(() => {
-    const getPrefs = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
-        const list = [];
-        supprimerToutPrefsLocal();
-        querySnapshot.forEach((doc) => {
-          const data = { id: doc.id, ...doc.data() };
-          list.push(data);
-          ajouterPrefsLocal(data.active, data.humidity, data.name, data.temperature);
-        });
-        setTempsPrefs(list);
-      } catch (error) {
-        console.log("Erreur lors de la récupération : " + error);
-        getPrefsLocal();
-        setTempsPrefs(prefs);
-      }
-    };
-
     getPrefs();
   }, []);
+
+  useEffect(()=>{
+    if(refreshHome){
+      getPrefs();
+    }
+  },[refreshHome])
+
+  const getPrefs = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
+      const list = [];
+      supprimerToutPrefsLocal();
+      querySnapshot.forEach((doc) => {
+        const data = { id: doc.id, ...doc.data() };
+        list.push(data);
+        ajouterPrefsLocal(data.active, data.humidity, data.name, data.temperature);
+      });
+      setTempsPrefs(list);
+    } catch (error) {
+      console.log("Erreur lors de la récupération : " + error);
+      getPrefsLocal();
+      setTempsPrefs(prefs);
+    }
+    finally{
+      dispatch(setRefreshHome(false));
+    }
+  };
 
   const deletePrefs = async (id) => {
     try {
@@ -64,7 +78,10 @@ const Home = () => {
       <View style={styles.content}>
         <Text style={styles.title}>Accueil</Text>
 
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={()=>navigation.navigate("addUpdateTempPrefs", {updating:false})}
+        >
           <Text style={styles.addButtonText}>Ajouter une configuration</Text>
         </TouchableOpacity>
 
