@@ -20,6 +20,7 @@ import "./i18n.js";
 import { useTranslation } from 'react-i18next';
 import { Provider } from 'react-redux';
 import store from "./stores/store.js"
+import addUpdateTempPrefs from './pages/tempPrefs/addUpdateTempPrefs.js';
 
 export default function App() {
   const {t} = useTranslation();
@@ -49,7 +50,7 @@ export default function App() {
     screenOptions: {
       headerShadowVisible:false,
       headerTitleStyle: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: "bold"
       },
     },
@@ -107,7 +108,7 @@ export default function App() {
         <Pressable {...props} android_ripple={{foreground: false }} />
       ),
       headerTitleStyle: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: "bold"
       },
     }),
@@ -138,7 +139,7 @@ export default function App() {
     screenOptions: {
       headerShadowVisible:false,
       headerTitleStyle:{
-        fontSize:28,
+        fontSize:24,
         fontWeight: "bold"
       }
     },
@@ -163,6 +164,12 @@ export default function App() {
           headerBackVisible:false
         }
       },
+      addUpdateTempPrefs:{
+        screen:addUpdateTempPrefs,
+        options: {
+          title: t('addUpdate.title')
+        }
+      }
     },
   });
 

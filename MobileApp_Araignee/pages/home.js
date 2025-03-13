@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, FlatList, ScrollView } from 'react-native';
 import Configuration from '../composants/Configuration';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { useDispatch, useSelector } from 'react-redux';
+import { collection, getDocs   } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import StandardButton from '../components/StandardButton';
 import { Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { getLocalUser } from '../api/secureStore';
+import { useNavigation } from '@react-navigation/native';
+import { setRefreshHome } from '../stores/sliceRefresh';
 
 const Home = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const refreshHome = useSelector((state) => state.refresh.refreshHome)
   const [tempPrefs, setTempsPrefs] = useState([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -86,6 +92,7 @@ const Home = () => {
           <StandardButton
             label={t('home.add_configuration')}
             color="green"
+            onPress={()=>navigation.navigate("addUpdateTempPrefs", {updating:false})}
           />
         </View>
 
