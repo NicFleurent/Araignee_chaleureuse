@@ -42,7 +42,9 @@ const styles = {
     color:'white'
   },
   greenButtonTxt:{
-    color:'black'
+    color:'black',
+    fontWeight: 'bold',
+    color: '#4B4E6D',
   }
 }
 

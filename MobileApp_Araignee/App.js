@@ -106,15 +106,12 @@ export default function App() {
     screens: {
       home: {
         screen: home,
-        options: {
-          headerShown: false
+        options:{
+          title:"yryry"
         }
       },
       scanStack: {
         screen: scanStack,
-        options: {
-          headerShown: false,
-        }
       },
       settings: {
         screen: settings,

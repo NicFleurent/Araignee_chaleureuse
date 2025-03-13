@@ -1,6 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native';
+import StandardButton from '../components/StandardButton';
+import { useTranslation } from 'react-i18next'; 
 
 const COLORS = {
   primary: '#84DCC6',
@@ -9,12 +11,12 @@ const COLORS = {
 
 const LaunchScan = () => {
   const navigation = useNavigation();
-
+  const { t } = useTranslation(); 
   const handleLaunchScan = () => {
     // Toast.show({
     //   type: 'error',
-    //   text1: 'Attention',
-    //   text2: 'Le robot doit être au sol',
+    //   text1: t('launchScan.toast_title'), 
+    //   text2: t('launchScan.toast_message'), 
     // });
 
     navigation.navigate('scan');
@@ -22,12 +24,12 @@ const LaunchScan = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Scan de la pièce</Text>
-
       <View style={styles.content}>
-        <TouchableOpacity onPress={handleLaunchScan} style={styles.button}>
-          <Text style={styles.buttonText}>Lancer le scan</Text>
-        </TouchableOpacity>
+        <StandardButton
+          label={t('launchScan.start_scan')} 
+          color="green"
+          onPress={handleLaunchScan}
+        />
       </View>
       <Toast />
     </SafeAreaView>
