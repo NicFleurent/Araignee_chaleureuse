@@ -115,11 +115,14 @@ export default function App() {
       home: {
         screen: home,
         options:{
-          title:"yryry"
+          title:t('home.title')
         }
       },
       scanStack: {
         screen: scanStack,
+        options:{
+          title:t('scan.title')
+        }
       },
       settings: {
         screen: settings,

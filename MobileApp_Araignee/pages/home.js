@@ -1,43 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, FlatList, ScrollView } from 'react-native';
 import Configuration from '../composants/Configuration';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../api/firebase';
-import useBD from '../hooks/useBD'; 
 import StandardButton from '../components/StandardButton';
 import { Alert } from 'react-native';
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from 'react-i18next';
+import { getLocalUser } from '../api/secureStore';
 
 const Home = () => {
   const [tempPrefs, setTempsPrefs] = useState([]);
   const [loading, setLoading] = useState(true);
-  //const { prefs, getPrefsLocal, ajouterPrefsLocal, supprimerPrefsLocal, supprimerToutPrefsLocal } = useBD(); 
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
 
   useEffect(() => {
     const getPrefs = async () => {
       setLoading(true);
+      const user = await getLocalUser();
+      console.log(user.data.uid);
       try {
         const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
         const list = [];
-        //supprimerToutPrefsLocal();
-        querySnapshot.forEach((doc) => {
-          const data = { id: doc.id, ...doc.data() };
-          list.push(data);
-          //ajouterPrefsLocal(data.active, data.humidity, data.name, data.temperature);
-          console.log("test3");
+        querySnapshot.forEach((doc) =>  {
+
+          console.log(doc.data().uid); 
+
+          if(doc.userid === user.data.uid){
+            const data = { id: doc.id, ...doc.data() };
+            list.push(data);
+          }
         });
-        console.log("test4");
         setTempsPrefs(list);
-        console.log("test5");
       } catch (error) {
         console.log("Erreur lors de la récupération : " + error);
-        getPrefsLocal();
-        setTempsPrefs(prefs);
-        console.log("test6");
       } finally {
-        setLoading(false); 
-        console.log("test7");
+        setLoading(false);
       }
     };
 
@@ -46,29 +43,28 @@ const Home = () => {
 
   const deletePrefs = async (id) => {
     Alert.alert(
-      t('home.confirm_delete_title'), 
-      t('home.confirm_delete_message'), 
+      t('home.confirm_delete_title'),
+      t('home.confirm_delete_message'),
       [
         {
-          text: t('no'), 
-          style: "cancel", 
+          text: t('no'),
+          style: "cancel",
         },
         {
-          text: t('yes'), 
+          text: t('yes'),
           onPress: async () => {
             try {
-              await deleteDoc(doc(db, "comfort_preferences", id)); 
+              await deleteDoc(doc(db, "comfort_preferences", id));
               console.log("Document supprimé avec succès");
-              supprimerPrefsLocal(id); 
-              getPrefs(); 
+              setTempsPrefs((prev) => prev.filter((item) => item.id !== id));
             } catch (error) {
               console.log("Erreur lors de la suppression : " + error);
             }
           },
-          style: "destructive", 
+          style: "destructive",
         },
       ],
-      { cancelable: true } 
+      { cancelable: true }
     );
   };
 
@@ -86,25 +82,33 @@ const Home = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-
         <View style={{ marginTop: 30 }}>
           <StandardButton
-              label={t('home.add_configuration')} 
-              color="green" 
+            label={t('home.add_configuration')}
+            color="green"
           />
         </View>
-        
+
         <View style={styles.configurationsContainer}>
-          {loading ? (
-            <ActivityIndicator size="large" color="#4B4E6D" />
-          ) : (
-            <FlatList
-              data={tempPrefs === null || []}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id} 
-              ListEmptyComponent={<Text>{t('home.no_configurations_found')}</Text>} 
-            />
-          )}
+          <ScrollView>
+            {loading ? (
+              <ActivityIndicator size="large" color="#4B4E6D" />
+            ) : tempPrefs.length > 0 ? (
+              tempPrefs.map((item) => (
+                <Configuration
+                  key={item.id}
+                  season={item.name}
+                  temperature={item.temperature}
+                  humidity={item.humidity}
+                  isActive={item.active}
+                  onDelete={() => deletePrefs(item.id)}
+                  onEdit={() => console.log("Editer : ", item.id)}
+                />
+              ))
+            ) : (
+              <Text>{t('home.no_configurations_found')}</Text>
+            )}
+          </ScrollView>
         </View>
       </View>
     </SafeAreaView>
@@ -119,12 +123,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    marginTop: 20,
-    color: '#4B4E6D',
   },
   configurationsContainer: {
     flex: 1,

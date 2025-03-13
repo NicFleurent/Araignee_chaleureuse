@@ -11,36 +11,28 @@ const COLORS = {
   textDark: '#4B4E6D',
 };
 
-const Configuration = ({ season, temperature, humidity, isActive ,onDelete, onEdit }) => {
+const Configuration = ({ season, temperature, humidity, isActive, onDelete, onEdit }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{season}</Text>
-        <View>
+        <Text numberOfLines={1} style={styles.title}>{season}</Text>
+        <View style={styles.valuesContainer}>
           <Text style={styles.value}>{temperature}°C</Text>
           <Text style={[styles.value, styles.marginTop]}>{humidity}%</Text>
         </View>
       </View>
 
       <View style={styles.footer}>
-        {isActive ?
-        (
-          <View style={styles.statusActive}>
-            <Text style={styles.statusText}>Actif</Text>
-          </View>
-        ) : (
-          <View style={styles.statusNotActive}>
-            <Text style={styles.statusText}>Inactif</Text>
-          </View>
-        )}
-        
+        <View style={[styles.status, isActive ? styles.statusActive : styles.statusNotActive]}>
+          <Text style={styles.statusText}>{isActive ? 'Actif' : 'Inactif'}</Text>
+        </View>
 
         <View style={styles.actions}>
-          <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
+          <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={onDelete}>
             <FontAwesomeIcon size={24} color={COLORS.danger} icon={faTrash} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.editButton} onPress={onEdit}>
+          <TouchableOpacity style={[styles.button, styles.editButton]} onPress={onEdit}>
             <FontAwesomeIcon size={24} color={COLORS.primary} icon={faPen} />
           </TouchableOpacity>
         </View>
@@ -55,9 +47,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     paddingVertical: 20,
     paddingHorizontal: 20,
-    marginBottom: 20, 
+    marginBottom: 20,
     backgroundColor: '#FFFFFF',
-    shadowColor: '#000', 
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -66,12 +58,16 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems:"flex-start"
   },
   title: {
     fontSize: 36,
     fontWeight: 'bold',
     color: COLORS.textDark,
+    width: '50%',
+  },
+  valuesContainer: {
+    alignItems: 'flex-end',
   },
   value: {
     fontSize: 36,
@@ -87,15 +83,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  statusActive: {
-    backgroundColor: COLORS.backgroundLight,
+  status: {
     paddingVertical: 8,
     paddingHorizontal: 15,
   },
+  statusActive: {
+    backgroundColor: COLORS.backgroundLight,
+  },
   statusNotActive: {
     backgroundColor: COLORS.dangerLight,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
   },
   statusText: {
     fontWeight: 'bold',
@@ -106,13 +102,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  button: {
+    padding: 10,
+  },
   deleteButton: {
     backgroundColor: COLORS.dangerLight,
-    padding: 10,
   },
   editButton: {
     backgroundColor: COLORS.backgroundLight,
-    padding: 10,
     marginLeft: 10,
   },
 });
