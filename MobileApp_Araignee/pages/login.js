@@ -1,6 +1,4 @@
-//TODO::Ajuster le responsive pour la tablette
-
-import { View, Text, Image, Switch, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, Image, Switch, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import StandardInput from '../components/StandardInput'
 import StandardButton from '../components/StandardButton';
@@ -10,15 +8,19 @@ import { auth } from '../api/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { getLocalUser, saveLocalUser } from '../api/secureStore';
 import useAsyncStorage from '../hooks/useAsyncStorage';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setDarkMode, setTemperatureHumidityUnit } from '../stores/sliceParameters';
 import Toast from 'react-native-toast-message';
+import { defineScreen } from '../stores/sliceScreen';
 
 const login = ({route}) => {
+  const {height, width} = useWindowDimensions();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   const {getLocalData} = useAsyncStorage();
+  const isTablet = useSelector((state) => state.screen.isTablet);
+  const darkMode = useSelector((state) => state.parameters.darkmode);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,12 +29,21 @@ const login = ({route}) => {
 
   const getParameters = async (user)=>{
     try {
+      const language = await getLocalData(`${user.uid}_language`);
       const tempHumidUnit = await getLocalData(`${user.uid}_tempHumidUnit`);
       const darkmode = await getLocalData(`${user.uid}_darkmode`);
       if(tempHumidUnit)
         dispatch(setTemperatureHumidityUnit(tempHumidUnit));
-      if(darkmode)
+      else
+        dispatch(setTemperatureHumidityUnit(undefined));
+
+      if(darkmode != undefined)
         dispatch(setDarkMode(darkmode));
+      else
+        dispatch(setDarkMode(false));
+
+      if(language && language != i18n.language)
+        i18n.changeLanguage(language);
 
       return true
     } catch (error) {
@@ -48,8 +59,8 @@ const login = ({route}) => {
   useEffect(()=>{
     const validateUser = async ()=>{
       const user = await getLocalUser();
-      if(user){
-        const result = await getParameters(user);
+      if(user.stayConnected){
+        const result = await getParameters(user.data);
         navigation.reset({
           index:0,
           routes:[
@@ -75,14 +86,47 @@ const login = ({route}) => {
     }
   },[route])
 
+  useEffect(() => {
+    if(darkMode)
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#15202B',
+        },
+        headerTintColor:'#fff',
+      });
+    else
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#fff',
+        },
+        headerTintColor:'#000',
+      });
+  }, [navigation, darkMode]);
+  
+  useEffect(()=>{
+    setScreen(height, width);
+  }, [height, width])
+
+  const setScreen = (height, width)=>{
+    const screen = {
+      height:height,
+      width:width
+    }
+
+    dispatch(defineScreen(screen));
+  }
+
   const handleLogin = async ()=>{
     if(validateForm()){
       try {
         const result = await signInWithEmailAndPassword(auth, email, password)
 
-        if(stayConnected){
-          saveLocalUser(result.user)
+        const user = {
+          data:result.user,
+          stayConnected:stayConnected
         }
+
+        saveLocalUser(user)
         
         await getParameters(result.user);
         navigation.reset({
@@ -130,16 +174,21 @@ const login = ({route}) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, darkMode && styles.containerDarkmode, isTablet && styles.containerTablet]}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.fullWidthContainer}>
-          <Image source={require("../assets/spider-bot.png")} />
+          {darkMode && 
+            <Image source={require("../assets/spider-bot-white.png")} /> ||
+            <Image source={require("../assets/spider-bot.png")} />
+          }
+          
           <StandardInput
             placeholder={t('input.email')}
             value={email}
             onChangeText={setEmail}
             keyboardType='email-address'
             error={errors.errorEmail}
+            darkMode={darkMode}
           />
           <StandardInput
             placeholder={t('input.password')}
@@ -147,9 +196,10 @@ const login = ({route}) => {
             onChangeText={setPassword}
             error={errors.errorPassword}
             secureTextEntry={true}
+            darkMode={darkMode}
           />
           <View style={styles.switchContainer}>
-            <Text style={styles.stayConnectedTxt}>{t('auth.stayConnected')}</Text>
+            <Text style={[styles.stayConnectedTxt, darkMode && styles.stayConnectedTxtDarkmode]}>{t('auth.stayConnected')}</Text>
             <Switch 
               value={stayConnected} 
               onValueChange={setStayConnected} 
@@ -164,9 +214,10 @@ const login = ({route}) => {
         <StandardButton
           label={t('auth.connexion')}
           onPress={handleLogin}
+          color={darkMode && "green"}
         />
-        <View style={styles.linkContainer}>
-          <Text>{t('auth.noAccount')}</Text>
+        <View style={[styles.linkContainer, isTablet && styles.linkContainerTablet]}>
+          <Text style={darkMode && {color:'#fff'}}>{t('auth.noAccount')}</Text>
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.link}
@@ -189,6 +240,13 @@ const styles = {
     alignItems:'center',
     justifyContent:'space-between'
   },
+  containerTablet:{
+    padding: 150,
+    paddingBottom:100
+  },
+  containerDarkmode:{
+    backgroundColor:'#15202B'
+  },
   scrollView:{
     alignItems:'center',
     justifyContent:'space-between',
@@ -210,6 +268,9 @@ const styles = {
     fontSize:16,
     fontWeight:'700'
   },
+  stayConnectedTxtDarkmode:{
+    color:'#fff'
+  },
   buttonContainer:{
     width:'100%',
     alignItems:'center',
@@ -220,6 +281,9 @@ const styles = {
     flexDirection:'row',
     alignItems:'center',
     justifyContent:'flex-start'
+  },
+  linkContainerTablet:{
+    justifyContent:'center'
   },
   link:{
     alignItems:'center',

@@ -1,7 +1,7 @@
 //TODO::Ajuster le responsive pour la tablette
 
 import { View, Text, Image, Switch, TouchableOpacity, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import StandardInput from '../components/StandardInput';
@@ -10,6 +10,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../api/firebase';
 import { saveLocalUser } from '../api/secureStore';
 import Toast from 'react-native-toast-message';
+import { defineScreen } from '../stores/sliceScreen';
+import { useSelector } from 'react-redux';
 
 const signup = () => {
   const navigation = useNavigation();
@@ -19,6 +21,25 @@ const signup = () => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [errors, setErrors] = useState([]);
   const [stayConnected, setStayConnected] = useState(false);
+  const isTablet = useSelector((state) => state.screen.isTablet);
+  const darkMode = useSelector((state) => state.parameters.darkmode);
+
+  useEffect(() => {
+    if(darkMode)
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#15202B',
+        },
+        headerTintColor:'#fff',
+      });
+    else
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#fff',
+        },
+        headerTintColor:'#000',
+      });
+  }, [navigation, darkMode]);
 
   const handleSignup = async ()=>{
     if(validateForm()){
@@ -26,9 +47,12 @@ const signup = () => {
         const result = await createUserWithEmailAndPassword(auth, email, password)
         console.log(result.user)
 
-        if(stayConnected){
-          saveLocalUser(result.user)
+        const user = {
+          data:result.user,
+          stayConnected:stayConnected
         }
+
+        saveLocalUser(user)
 
         navigation.reset({
           index:0,
@@ -91,16 +115,20 @@ const signup = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, darkMode && styles.containerDarkmode, isTablet && styles.containerTablet]}>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.fullWidthContainer}>
-          <Image source={require("../assets/spider-bot.png")} />
+          {darkMode && 
+            <Image source={require("../assets/spider-bot-white.png")} /> ||
+            <Image source={require("../assets/spider-bot.png")} />
+          }
           <StandardInput
             placeholder={t('input.email')}
             value={email}
             onChangeText={setEmail}
             keyboardType='email-address'
             error={errors.errorEmail}
+            darkMode={darkMode}
           />
           <StandardInput
             placeholder={t('input.password')}
@@ -108,6 +136,7 @@ const signup = () => {
             onChangeText={setPassword}
             error={errors.errorPassword}
             secureTextEntry={true}
+            darkMode={darkMode}
           />
           <StandardInput
             placeholder={t('input.passwordConfirm')}
@@ -115,9 +144,10 @@ const signup = () => {
             onChangeText={setPasswordConfirm}
             error={errors.errorPasswordConfirm}
             secureTextEntry={true}
+            darkMode={darkMode}
           />
           <View style={styles.switchContainer}>
-            <Text style={styles.stayConnectedTxt}>{t('auth.stayConnected')}</Text>
+            <Text style={[styles.stayConnectedTxt, darkMode && styles.stayConnectedTxtDarkmode]}>{t('auth.stayConnected')}</Text>
             <Switch 
               value={stayConnected} 
               onValueChange={setStayConnected} 
@@ -132,9 +162,10 @@ const signup = () => {
         <StandardButton
           label={t('auth.signup')}
           onPress={handleSignup}
+          color={darkMode && "green"}
         />
-        <View style={styles.linkContainer}>
-          <Text>{t('auth.alreadyAccount')}</Text>
+        <View style={[styles.linkContainer, isTablet && styles.linkContainerTablet]}>
+          <Text style={darkMode && {color:'#fff'}}>{t('auth.alreadyAccount')}</Text>
           <TouchableOpacity
             activeOpacity={0.7}
             style={styles.link}
@@ -157,6 +188,13 @@ const styles = {
     alignItems:'center',
     justifyContent:'space-between'
   },
+  containerTablet:{
+    padding: 150,
+    paddingBottom:100
+  },
+  containerDarkmode:{
+    backgroundColor:'#15202B'
+  },
   scrollView:{
     alignItems:'center',
     justifyContent:'space-between',
@@ -178,6 +216,9 @@ const styles = {
     fontSize:16,
     fontWeight:'700'
   },
+  stayConnectedTxtDarkmode:{
+    color:'#fff'
+  },
   buttonContainer:{
     width:'100%',
     alignItems:'center',
@@ -188,6 +229,9 @@ const styles = {
     flexDirection:'row',
     alignItems:'center',
     justifyContent:'flex-start'
+  },
+  linkContainerTablet:{
+    justifyContent:'center'
   },
   link:{
     alignItems:'center',

@@ -47,7 +47,11 @@ export default function App() {
   const scanStack = createNativeStackNavigator({
     initialRouteName:"launchScan",
     screenOptions: {
-      headerShadowVisible:false
+      headerShadowVisible:false,
+      headerTitleStyle: {
+        fontSize: 26,
+        fontWeight: "bold"
+      },
     },
     screens:{
       launchScan: {
@@ -102,6 +106,10 @@ export default function App() {
       tabBarButton: (props) => (
         <Pressable {...props} android_ripple={{foreground: false }} />
       ),
+      headerTitleStyle: {
+        fontSize: 26,
+        fontWeight: "bold"
+      },
     }),
     screens: {
       home: {
@@ -127,7 +135,8 @@ export default function App() {
     screenOptions: {
       headerShadowVisible:false,
       headerTitleStyle:{
-        fontSize:28
+        fontSize:28,
+        fontWeight: "bold"
       }
     },
     screens: {
@@ -159,6 +168,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <Navigation/>
+      <StatusBar style="auto" />
     </Provider>
   );
 }
