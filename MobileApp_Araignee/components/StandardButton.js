@@ -1,4 +1,3 @@
-import { Background } from '@react-navigation/elements'
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 

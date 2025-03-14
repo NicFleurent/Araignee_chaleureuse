@@ -61,14 +61,15 @@ const login = ({route}) => {
       const user = await getLocalUser();
       if(user.stayConnected){
         const result = await getParameters(user.data);
-        navigation.reset({
-          index:0,
-          routes:[
-            {
-              name:'addUpdateTempPrefs',
-            }
-          ]
-        })
+        navigation.navigate("Menu", { screen: "Home"});
+        // navigation.reset({
+        //   index:0,
+        //   routes:[
+        //     {
+        //       name:'addUpdateTempPrefs',
+        //     }
+        //   ]
+        // })
       }
     }
     validateUser();

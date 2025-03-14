@@ -6,20 +6,43 @@ import { useNavigation } from '@react-navigation/native';
 import init from 'react_native_mqtt';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StandardButton from '../components/StandardButton';
-import { useTranslation } from 'react-i18next'; // Importer useTranslation
-
-const COLORS = {
-  primary: '#84DCC6',
-  secondary: '#4B4E6D',
-  textDark: '#4B4E6D',
-  white: '#FFFFFF',
-};
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux'; 
 
 const Scan = () => {
   const navigation = useNavigation();
-  const { t } = useTranslation(); // Utiliser useTranslation
+  const { t } = useTranslation();
+  const darkMode = useSelector((state) => state.parameters.darkmode); 
   const clientRef = useRef(null);
-  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if(darkMode)
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#15202B',
+        },
+        headerTintColor:'#fff',
+        tabBarActiveBackgroundColor: "#15202B",
+        tabBarInactiveBackgroundColor: "#15202B",
+      });
+    else
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#fff',
+        },
+        headerTintColor:'#000',
+        tabBarActiveBackgroundColor: "#fff",
+        tabBarInactiveBackgroundColor: "#fff",
+      });
+  }, [navigation, darkMode]);
+
+
+  const COLORS = {
+    primary: darkMode ? '#84DCC6' : '#4B4E6D',
+    secondary: darkMode ? '#FFFFFF' : '#4B4E6D',
+    textDark: darkMode ? '#FFFFFF' : '#4B4E6D',
+    white: darkMode ? '#15202B' : '#FFFFFF',
+  };
 
   const onConnect = useCallback(() => {
     console.log("onConnect");
@@ -70,17 +93,17 @@ const Scan = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: COLORS.white }]}>
       <View style={styles.buttonContainer}>
         <View style={styles.buttonWrapper}>
           <StandardButton
-            label={t('scan.stop')} // Utiliser la traduction pour le bouton
+            label={t('scan.stop')}
             onPress={() => publish("arret")}
           />
         </View>
         <View style={styles.buttonWrapper}>
           <StandardButton
-            label={t('scan.finish')} // Utiliser la traduction pour le bouton
+            label={t('scan.finish')}
             color="green"
             onPress={() => {
               publish("arret");
@@ -92,10 +115,10 @@ const Scan = () => {
 
       <View style={styles.dataContainer}>
         <View style={styles.dataItem}>
-          <Text style={styles.dataText}>-9°C</Text>
+          <Text style={[styles.dataText, { color: COLORS.textDark }]}>-9°C</Text>
         </View>
         <View style={styles.dataItem}>
-          <Text style={styles.dataText}>80%</Text>
+          <Text style={[styles.dataText, { color: COLORS.textDark }]}>80%</Text>
         </View>
       </View>
 
@@ -119,7 +142,6 @@ const Scan = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
     paddingHorizontal: 20,
   },
   buttonContainer: {
@@ -142,7 +164,6 @@ const styles = StyleSheet.create({
   dataText: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: COLORS.textDark,
   },
   loaderContainer: {
     marginVertical: 40,

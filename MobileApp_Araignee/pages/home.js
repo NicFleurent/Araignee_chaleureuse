@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import Configuration from '../composants/Configuration';
 import { useDispatch, useSelector } from 'react-redux';
-import { collection, getDocs   } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import StandardButton from '../components/StandardButton';
-import { Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { getLocalUser } from '../api/secureStore';
 import { useNavigation } from '@react-navigation/native';
@@ -14,10 +13,29 @@ import { setRefreshHome } from '../stores/sliceRefresh';
 const Home = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const refreshHome = useSelector((state) => state.refresh.refreshHome)
+  const refreshHome = useSelector((state) => state.refresh.refreshHome);
+  const darkMode = useSelector((state) => state.parameters.darkmode); 
   const [tempPrefs, setTempsPrefs] = useState([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (darkMode) {
+      navigation.setOptions({
+        headerStyle: {
+          backgroundColor: '#15202B',
+        },
+        headerTintColor: '#fff',
+      });
+    } else {
+      navigation.setOptions({
+        headerStyle: {
+          backgroundColor: '#fff',
+        },
+        headerTintColor: '#000',
+      });
+    }
+  }, [navigation, darkMode]);
 
   useEffect(() => {
     const getPrefs = async () => {
@@ -27,11 +45,8 @@ const Home = () => {
       try {
         const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
         const list = [];
-        querySnapshot.forEach((doc) =>  {
-
-          console.log(doc.data().uid); 
-
-          if(doc.userid === user.data.uid){
+        querySnapshot.forEach((doc) => {
+          if (doc.data().userId === user.data.uid) {
             const data = { id: doc.id, ...doc.data() };
             list.push(data);
           }
@@ -45,7 +60,7 @@ const Home = () => {
     };
 
     getPrefs();
-  }, []);
+  }, [refreshHome]);
 
   const deletePrefs = async (id) => {
     Alert.alert(
@@ -74,32 +89,22 @@ const Home = () => {
     );
   };
 
-  const renderItem = ({ item }) => (
-    <Configuration
-      season={item.name}
-      temperature={item.temperature}
-      humidity={item.humidity}
-      isActive={item.active}
-      onDelete={() => deletePrefs(item.id)}
-      onEdit={() => console.log("Editer : ", item.id)}
-    />
-  );
-
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, darkMode && styles.containerDarkmode]}>
       <View style={styles.content}>
         <View style={{ marginTop: 30 }}>
           <StandardButton
             label={t('home.add_configuration')}
             color="green"
-            onPress={()=>navigation.navigate("addUpdateTempPrefs", {updating:false})}
+            onPress={() => navigation.navigate("addUpdateTempPrefs", { updating: false })}
+            darkMode={darkMode} 
           />
         </View>
 
         <View style={styles.configurationsContainer}>
           <ScrollView>
             {loading ? (
-              <ActivityIndicator size="large" color="#4B4E6D" />
+              <ActivityIndicator size="large" color={darkMode ? '#84DCC6' : '#4B4E6D'} />
             ) : tempPrefs.length > 0 ? (
               tempPrefs.map((item) => (
                 <Configuration
@@ -109,11 +114,14 @@ const Home = () => {
                   humidity={item.humidity}
                   isActive={item.active}
                   onDelete={() => deletePrefs(item.id)}
-                  onEdit={() => console.log("Editer : ", item.id)}
+                  onEdit={() => navigation.navigate("addUpdateTempPrefs", { updating: true, id: item.id })}
+                  //darkMode={true} 
                 />
               ))
             ) : (
-              <Text>{t('home.no_configurations_found')}</Text>
+              <Text style={[styles.noConfigurationsText, darkMode && styles.noConfigurationsTextDarkmode]}>
+                {t('home.no_configurations_found')}
+              </Text>
             )}
           </ScrollView>
         </View>
@@ -127,6 +135,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  containerDarkmode: {
+    backgroundColor: '#15202B', 
+  },
   content: {
     flex: 1,
     paddingHorizontal: 20,
@@ -134,6 +145,14 @@ const styles = StyleSheet.create({
   configurationsContainer: {
     flex: 1,
     marginTop: 20,
+  },
+  noConfigurationsText: {
+    color: '#000', 
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  noConfigurationsTextDarkmode: {
+    color: '#fff', 
   },
 });
 
