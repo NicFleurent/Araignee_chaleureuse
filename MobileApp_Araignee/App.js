@@ -18,7 +18,7 @@ import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
 import "./i18n.js";
 import { useTranslation } from 'react-i18next';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import store from "./stores/store.js"
 import addUpdateTempPrefs from './pages/tempPrefs/addUpdateTempPrefs.js';
 
@@ -58,7 +58,7 @@ export default function App() {
       launchScan: {
         screen: launchScan,
         options: {
-          headerShown: false
+          title: t('launchScan.title'),
         }
       },
       scan: {
@@ -78,45 +78,48 @@ export default function App() {
 
   const BottomTabs = createBottomTabNavigator({
     initialRouteName: "home",
-    screenOptions: ({ route }) => ({
-      tabBarIcon: ({ focused, color, size }) => {
-        let iconName;
-        if (route.name === "home") {
-          iconName = faTemperatureLow;
-        } else if (route.name === "scanStack") {
-          iconName = faRobot;
-        }
-        else{
-          iconName = faGear;
-        }
-        return (
-          <View style={focused && {backgroundColor:'lightgray', padding:10, borderRadius:230}}>
-            <FontAwesomeIcon icon={iconName} size={size} color={color} />
-          </View>
-        );
-      },
-      tabBarActiveTintColor: "#4B4E6D",
-      tabBarInactiveTintColor: "lightgray",
-      tabBarShowLabel: false,
-      tabBarLabelPosition: "beside-icon",
-      tabBarStyle: {
-        borderTopWidth: 0,
-        elevation:0
-      },
-      headerShadowVisible:false,
-      tabBarButton: (props) => (
-        <Pressable {...props} android_ripple={{foreground: false }} />
-      ),
-      headerTitleStyle: {
-        fontSize: 24,
-        fontWeight: "bold"
-      },
-    }),
+    screenOptions: ({ route }) => {
+      const darkMode = useSelector((state) => state.parameters.darkmode); 
+      return {
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          if (route.name === "home") {
+            iconName = faTemperatureLow;
+          } else if (route.name === "scanStack") {
+            iconName = faRobot;
+          } else {
+            iconName = faGear;
+          }
+          return (
+            <View style={focused && { backgroundColor: 'lightgray', padding: 10, borderRadius: 230 }}>
+              <FontAwesomeIcon icon={iconName} size={size} color={color} />
+            </View>
+          );
+        },
+        tabBarActiveTintColor: darkMode ? "#FFFFFF" : "#4B4E6D",
+        tabBarInactiveTintColor: darkMode ? "#A9A9A9" : "lightgray",
+        tabBarShowLabel: false,
+        tabBarLabelPosition: "beside-icon",
+        tabBarStyle: {
+          borderTopWidth: 0,
+          elevation: 0,
+          backgroundColor: darkMode ? "#15202B" : "#FFFFFF",
+        },
+        headerShadowVisible: false,
+        tabBarButton: (props) => (
+          <Pressable {...props} android_ripple={{ foreground: false }} />
+        ),
+        headerTitleStyle: {
+          fontSize: 24,
+          fontWeight: "bold"
+        },
+      };
+    },
     screens: {
       home: {
         screen: home,
         options: {
-          headerShown: false
+          title: t('home.title')
         }
       },
       scanStack: {
@@ -177,8 +180,8 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <Navigation/>
-      <StatusBar style="auto" />
+        <Navigation />
+        <StatusBar style="auto" />
     </Provider>
   );
 }

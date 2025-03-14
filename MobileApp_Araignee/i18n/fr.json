@@ -1,20 +1,20 @@
 {
-  "error":"Erreur",
-  "yes":"Oui",
-  "no":"Non",
-  "auth":{
-    "connexion":"Connexion",
-    "signup":"Inscription",
-    "logout":"Déconnexion",
-    "stayConnected":"Rester connecté",
-    "noAccount":"Vous n'avez pas de compte?",
-    "alreadyAccount":"Vous avez déjà un compte?",
-    "subscribe":"Inscrivez-vous",
-    "connect":"Connectez-vous",
-    "connexion_failed":"La connexion à échouée",
-    "connexion_failed_credentials":"L'adresse courriel ou le mot de passe est invalide",
-    "signup_failed":"L'inscription à échouée",
-    "signup_failed_email_taken":"L'adresse courriel est déjà prise"
+  "error": "Erreur",
+  "yes": "Oui",
+  "no": "Non",
+  "auth": {
+    "connexion": "Connexion",
+    "signup": "Inscription",
+    "logout": "Déconnexion",
+    "stayConnected": "Rester connecté",
+    "noAccount": "Vous n'avez pas de compte?",
+    "alreadyAccount": "Vous avez déjà un compte?",
+    "subscribe": "Inscrivez-vous",
+    "connect": "Connectez-vous",
+    "connexion_failed": "La connexion à échouée",
+    "connexion_failed_credentials": "L'adresse courriel ou le mot de passe est invalide",
+    "signup_failed": "L'inscription à échouée",
+    "signup_failed_email_taken": "L'adresse courriel est déjà prise"
   },
   "input":{
     "email":"Adresse courriel",
@@ -44,34 +44,47 @@
     "cancel":"Annuler",
     "save":"Sauvegarder"
   },
-  "home":{
-    "title":"Accueil"
+  "home": {
+    "title": "Accueil",
+    "add_configuration": "Ajouter une configuration",
+    "no_configurations_found": "Aucune configuration trouvée.",
+    "confirm_delete_title": "Confirmer la suppression",
+    "confirm_delete_message": "Êtes-vous sûr de vouloir supprimer cette préférence ?"
   },
-  "settings":{
-    "title":"Paramètres",
-    "language":"Langues",
-    "language_change":"Changer la langue",
-    "language_confirm_title":"Changement de langue",
-    "language_reload_warning":"Si vous changez la langue, l'application redémarrera. Voulez-vous continuer?",
-    "language_choose_one":"Veuiller choisir une langue",
-    "language_already_chosen":"Cette langue est déjà sélectionnée",
-    "temperature_unit":"Unité de mesure de la température",
-    "darkmode":"Thème sombre",
-    "delete_account":"Supprimer le compte",
-    "logout_success":"Déconnexion réussie",
-    "logout_error":"La déconnexion à échouée",
-    "delete_account_success":"Suppression du compte réussie",
-    "delete_account_modal_text":"Entrer votre mot de passe pour pouvoir supprimer votre compte",
-    "delete_account_error":"La suppression à échouée"
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langues",
+    "language_change": "Changer la langue",
+    "language_confirm_title": "Changement de langue",
+    "language_reload_warning": "Si vous changez la langue, l'application redémarrera. Voulez-vous continuer?",
+    "language_choose_one": "Veuiller choisir une langue",
+    "language_already_chosen": "Cette langue est déjà sélectionnée",
+    "temperature_unit": "Unité de mesure de la température",
+    "darkmode": "Thème sombre",
+    "delete_account": "Supprimer le compte",
+    "logout_success": "Déconnexion réussie",
+    "logout_error": "La déconnexion à échouée",
+    "delete_account_success": "Suppression du compte réussie",
+    "delete_account_modal_text": "Entrer votre mot de passe pour pouvoir supprimer votre compte",
+    "delete_account_error": "La suppression à échouée"
   },
-  "launchScan":{
-    "title":"Scan de la pièce"
+  "launchScan": {
+    "title": "Scan de la pièce",
+    "start_scan": "Lancer le scan",
+    "toast_title": "Attention",
+    "toast_message": "Le robot doit être au sol"
   },
-  "scan":{
-    "title":"Scan"
+  "scan": {
+    "title": "Scan",
+    "stop": "Arrêter",
+    "finish": "Terminer"
   },
-  "closeScan":{
-    "title":"Scan terminé"
+  "closeScan": {
+    "title": "Veuillez laisser spidy retourner au lieu indiqué",
+    "temperature": "Température",
+    "humidity": "Humidité",
+    "return_home": "Retour à l’accueil",
+    "rescan": "Refaire le scan"
   },
   "addUpdate":{
     "title":"Ajouter une configuration",

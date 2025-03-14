@@ -32,7 +32,7 @@ const useBD = () => {
 
     const getPrefsLocal = async () => {
         if (!bd.current) {
-            console.log("Base de données non encore initialisée");
+            console.log("Base de données pas encore initialisée");
             return;
         }
         try {
@@ -50,6 +50,7 @@ const useBD = () => {
                 `INSERT INTO comfort_preferences (active, humidity, name, temperature) VALUES (?, ?, ?, ?)`,
                 [active, humidity, name, temperature]
             );
+            console.log("ajout");
             getPrefsLocal();
         } catch (e) {
             console.log("Erreur lors de l'ajout des données", e);
@@ -57,6 +58,10 @@ const useBD = () => {
     };
 
     const supprimerPrefsLocal = async (id) => {
+        if (!bd.current) {
+            console.log("Base de données pas encore initialisée pour la suppresion complete");
+            return;
+        }
         try {
             await bd.current.runAsync(
                 `DELETE FROM comfort_preferences WHERE id = ?`,

@@ -1,52 +1,64 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {faArrowUp, faSquare, faArrowDown, faRotateLeft, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faSquare, faArrowDown, faRotateLeft, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import init from 'react_native_mqtt';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-  const COLORS = {
-    primary: '#84DCC6',
-    secondary: '#4B4E6D',
-    textDark: '#4B4E6D',
-    white: '#FFFFFF',
-  };
+import StandardButton from '../components/StandardButton';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux'; 
 
 const Scan = () => {
   const navigation = useNavigation();
-
+  const { t } = useTranslation();
+  const darkMode = useSelector((state) => state.parameters.darkmode); 
   const clientRef = useRef(null);
-  const intervalRef = useRef(null);
 
-  const startPublishing = (command) => {
-    intervalRef.current = setInterval(() => {
-      publish(command);
-    }, 100);
+  useEffect(() => {
+    if(darkMode)
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#15202B',
+        },
+        headerTintColor:'#fff',
+        tabBarActiveBackgroundColor: "#15202B",
+        tabBarInactiveBackgroundColor: "#15202B",
+      });
+    else
+      navigation.setOptions({
+        headerStyle: {
+            backgroundColor: '#fff',
+        },
+        headerTintColor:'#000',
+        tabBarActiveBackgroundColor: "#fff",
+        tabBarInactiveBackgroundColor: "#fff",
+      });
+  }, [navigation, darkMode]);
+
+
+  const COLORS = {
+    primary: darkMode ? '#84DCC6' : '#4B4E6D',
+    secondary: darkMode ? '#FFFFFF' : '#4B4E6D',
+    textDark: darkMode ? '#FFFFFF' : '#4B4E6D',
+    white: darkMode ? '#15202B' : '#FFFFFF',
   };
 
-  const stopPublishing = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-  function onConnect() {
+  const onConnect = useCallback(() => {
     console.log("onConnect");
-    clientRef.current.subscribe("spider_object")
-  }
+    clientRef.current.subscribe("spider_object");
+  }, []);
 
-  function onConnectionLost(responseObject) {
+  const onConnectionLost = useCallback((responseObject) => {
     if (responseObject.errorCode !== 0) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
     }
-  }
+  }, []);
 
-  function onMessageArrived(message) {
+  const onMessageArrived = useCallback((message) => {
     console.log("onMessageArrived:" + message.payloadString);
-  }
-  9
+  }, []);
+
   useEffect(() => {
     init({
       size: 10000,
@@ -56,41 +68,57 @@ const Scan = () => {
       reconnect: true,
       sync: {},
     });
- 
+
     clientRef.current = new Paho.MQTT.Client("172.16.207.219", 9001, "uname");
- 
     clientRef.current.onConnectionLost = onConnectionLost;
     clientRef.current.onMessageArrived = onMessageArrived;
-    clientRef.current.connect({ onSuccess:onConnect, useSSL: false });
+    clientRef.current.connect({ onSuccess: onConnect, useSSL: false });
+
+    return () => {
+      if (clientRef.current) {
+        clientRef.current.disconnect();
+      }
+    };
+  }, [onConnect, onConnectionLost, onMessageArrived]);
+
+  const publish = useCallback((command) => {
+    console.log(command);
+    // clientRef.current.publish("spider_app", command, 0, false);
   }, []);
 
-  const publish = (command)=>{
-    //clientRef.current.publish("spider_app", command,0,false);
-    console.log(command)
-  }
+  const ControlIcon = ({ icon, onPress }) => (
+    <TouchableOpacity onPress={onPress}>
+      <FontAwesomeIcon size={80} color={COLORS.secondary} icon={icon} />
+    </TouchableOpacity>
+  );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: COLORS.white }]}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={()=>publish("arret")} style={[styles.button, styles.buttonSecondary]}>
-          <Text style={styles.buttonTextSecondary}>Arrêter</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={()=>{
-          publish("arret");
-          navigation.navigate("closeScan");
-          }} style={[styles.button, styles.buttonPrimary]}>
-          <Text style={styles.buttonTextPrimary}>Terminer</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonWrapper}>
+          <StandardButton
+            label={t('scan.stop')}
+            onPress={() => publish("arret")}
+          />
+        </View>
+        <View style={styles.buttonWrapper}>
+          <StandardButton
+            label={t('scan.finish')}
+            color="green"
+            onPress={() => {
+              publish("arret");
+              navigation.navigate("closeScan");
+            }}
+          />
+        </View>
       </View>
 
       <View style={styles.dataContainer}>
         <View style={styles.dataItem}>
-          <Text style={styles.dataText}>-9°C</Text>
+          <Text style={[styles.dataText, { color: COLORS.textDark }]}>-9°C</Text>
         </View>
-
         <View style={styles.dataItem}>
-          <Text style={styles.dataText}>80%</Text>
+          <Text style={[styles.dataText, { color: COLORS.textDark }]}>80%</Text>
         </View>
       </View>
 
@@ -99,45 +127,13 @@ const Scan = () => {
       </View>
 
       <View style={styles.controlsContainer}>
-        <View style={styles.controlIcon}>
-         <TouchableOpacity
-            onPressIn={() => startPublishing("haut")} 
-            onPressOut={stopPublishing} 
-          >
-            <FontAwesomeIcon size={80} color={COLORS.secondary} icon={faArrowUp} />
-          </TouchableOpacity>
-        </View>
-
+        <ControlIcon icon={faArrowUp} onPress={() => publish("haut")} />
         <View style={styles.controlRow}>
-          <TouchableOpacity
-            onPressIn={() => startPublishing("gauche")} 
-            onPressOut={stopPublishing} 
-          >
-            <FontAwesomeIcon size={80} color={COLORS.secondary} icon={faRotateLeft} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPressIn={() => startPublishing("arret")}
-            onPressOut={stopPublishing}
-          >
-            <FontAwesomeIcon size={80} color={COLORS.secondary} icon={faSquare} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPressIn={() => startPublishing("droit")}
-            onPressOut={stopPublishing}
-          >
-            <FontAwesomeIcon size={80} color={COLORS.secondary} icon={faRotateRight} />
-          </TouchableOpacity>
+          <ControlIcon icon={faRotateLeft} onPress={() => publish("gauche")} />
+          <ControlIcon icon={faSquare} onPress={() => publish("arret")} />
+          <ControlIcon icon={faRotateRight} onPress={() => publish("droit")} />
         </View>
-
-        <View style={styles.controlIcon}>
-          <TouchableOpacity 
-            onPressIn={() => startPublishing("bas")} 
-            onPressOut={stopPublishing} >
-            <FontAwesomeIcon size={80} color={COLORS.secondary} icon={faArrowDown} />
-          </TouchableOpacity>
-        </View>
+        <ControlIcon icon={faArrowDown} onPress={() => publish("bas")} />
       </View>
     </View>
   );
@@ -146,7 +142,6 @@ const Scan = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
     paddingHorizontal: 20,
   },
   buttonContainer: {
@@ -154,34 +149,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
   },
-  button: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  buttonPrimary: {
-    backgroundColor: COLORS.primary,
-    marginLeft: 15,
-  },
-  buttonSecondary: {
-    backgroundColor: COLORS.secondary,
-    marginRight: 15,
-  },
-  buttonTextPrimary: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: COLORS.textDark,
-  },
-  buttonTextSecondary: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: COLORS.white,
+  buttonWrapper: {
+    width: "48%",
   },
   dataContainer: {
     flexDirection: 'row',
@@ -195,16 +164,12 @@ const styles = StyleSheet.create({
   dataText: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: COLORS.textDark,
   },
   loaderContainer: {
     marginVertical: 40,
     alignItems: 'center',
   },
   controlsContainer: {
-    alignItems: 'center',
-  },
-  controlIcon: {
     alignItems: 'center',
   },
   controlRow: {

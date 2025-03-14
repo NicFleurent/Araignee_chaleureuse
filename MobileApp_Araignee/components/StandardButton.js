@@ -1,4 +1,3 @@
-import { Background } from '@react-navigation/elements'
 import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 
@@ -42,7 +41,9 @@ const styles = {
     color:'white'
   },
   greenButtonTxt:{
-    color:'black'
+    color:'black',
+    fontWeight: 'bold',
+    color: '#4B4E6D',
   }
 }
 
