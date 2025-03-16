@@ -41,7 +41,6 @@ const Home = () => {
     const getPrefs = async () => {
       setLoading(true);
       const user = await getLocalUser();
-      console.log(user.data.uid);
       try {
         const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
         const list = [];
@@ -52,6 +51,9 @@ const Home = () => {
           }
         });
         setTempsPrefs(list);
+        if(refreshHome){
+          dispatch(setRefreshHome(false));
+        }
       } catch (error) {
         console.log("Erreur lors de la récupération : " + error);
       } finally {
@@ -96,7 +98,7 @@ const Home = () => {
           <StandardButton
             label={t('home.add_configuration')}
             color="green"
-            onPress={() => navigation.navigate("addUpdateTempPrefs", { updating: false })}
+            onPress={() => navigation.navigate("addUpdateTempPrefs")}
             darkMode={darkMode} 
           />
         </View>
@@ -114,7 +116,7 @@ const Home = () => {
                   humidity={item.humidity}
                   isActive={item.active}
                   onDelete={() => deletePrefs(item.id)}
-                  onEdit={() => navigation.navigate("addUpdateTempPrefs", { updating: true, id: item.id })}
+                  onEdit={() => navigation.navigate("addUpdateTempPrefs", { item: item })}
                   //darkMode={true} 
                 />
               ))
