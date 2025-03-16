@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Switch } from 'react-native'
+import { View, Text, ScrollView, Switch, ActivityIndicator, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import StandardInput from '../../components/StandardInput'
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import StandardButton from '../../components/StandardButton';
 import { getLocalUser } from '../../api/secureStore';
-import { addDoc, collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../api/firebase';
 import Toast from 'react-native-toast-message';
 import { setRefreshHome } from '../../stores/sliceRefresh';
 
-const addUpdateTempPrefs = () => {
+const addUpdateTempPrefs = ({route}) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -19,7 +19,9 @@ const addUpdateTempPrefs = () => {
   const darkMode = useSelector((state) => state.parameters.darkmode);
   const isTablet = useSelector((state) => state.screen.isTablet);
 
-  const [userId, setUserId] = useState({});
+  const [isLoading, setIsLoading] = useState("");
+  const [userId, setUserId] = useState("");
+  const [updateDocId, setUpdateDocId] = useState("");
   const [name, setName] = useState("");
   const [temperature, setTemperature] = useState();
   const [humidity, setHumidity] = useState();
@@ -34,6 +36,21 @@ const addUpdateTempPrefs = () => {
     }
     getUser();
   }, []);
+
+  useEffect(()=>{
+    if(route.params?.item){
+      const item = route.params.item
+      setUpdateDocId(item.id)
+      setIsActive(item.active)
+      setName(item.name)
+      setHumidity(item.humidity)
+
+      let fahrenheitTemp;
+      if(temperatureUnit === "farenheit")
+        fahrenheitTemp = celsiusToFahrenheit(item.temperature);
+      setTemperature(fahrenheitTemp);
+    }
+  }, [route])
 
   useEffect(() => {
       if(darkMode)
@@ -53,28 +70,29 @@ const addUpdateTempPrefs = () => {
     }, [navigation, darkMode]);
   
   const handleSave = async ()=>{
-    const newDocId = "e8MPB0McENbUPludkMt1" //docAddResult.id - e8MPB0McENbUPludkMt1 
-    preferences = await getUserComfortPreferences(newDocId);
-    console.log(preferences)
-
-
     if(validateForm()){
+      setIsLoading(true);
       let celciusTemp = temperature;
+      let modifiedDocId;
       if(temperatureUnit === "farenheit")
         celciusTemp = fahrenheitToCelsius(celciusTemp);
 
-      //Modif dans firebase
+      if(updateDocId){
+        await updateToFirebase(celciusTemp);
+        modifiedDocId = updateDocId;
+      }
+      else{
+        const docAddResult = await addToFirebase(celciusTemp);
+        modifiedDocId = docAddResult.id;
+      }
 
-      //Si active, désativer tous les autres
 
-      //const docAddResult = await addToFirebase(celciusTemp);
-      
+      if(isActive)
+        await updateActivePref(modifiedDocId);
 
-
-
-
-      //dispatch(setRefreshHome(true));
-      //navigation.goBack();
+      dispatch(setRefreshHome(true));
+      setIsLoading(false);
+      navigation.goBack();
     }
   }
 
@@ -104,6 +122,9 @@ const addUpdateTempPrefs = () => {
   const fahrenheitToCelsius = (fahrenheit) => {
     return ((fahrenheit - 32) * 5 / 9).toFixed(1);
   };
+  const celsiusToFahrenheit = (celsius) => {
+    return ((celsius * 9 / 5) + 32).toFixed(1);
+  };
 
   const addToFirebase = async (temperature)=>{
     const newTempPref = {
@@ -129,7 +150,41 @@ const addUpdateTempPrefs = () => {
     }
   }
 
-  const getUserComfortPreferences = async (docId) => {
+  const updateToFirebase = async (temperature)=>{
+    const docRef = doc(db, "comfort_preferences", updateDocId);
+    const docSnap = await getDoc(docRef);
+
+    const updatedTempPref = {
+      name:name,
+      temperature:temperature,
+      humidity:humidity,
+      active:isActive
+    }
+
+    try {
+      await updateDoc(docSnap.ref, updatedTempPref);
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: t('error'),
+        text2: t('addUpdate.error_update'),
+      });
+    }
+  }
+
+  const updateActivePref = async (docId)=>{
+    const preferences = await getUserComfortPreferences();
+    preferences.map(async (preferenceDoc)=>{
+      if(preferenceDoc.id === docId){
+        await updateDoc(preferenceDoc.ref, {"active":true})
+      }
+      else{
+        await updateDoc(preferenceDoc.ref, {"active":false})
+      }
+    })
+  }
+
+  const getUserComfortPreferences = async () => {
     try {
       const comfortRef = collection(db, "comfort_preferences");
       const q = query(comfortRef, where("userId", "==", userId));
@@ -137,11 +192,8 @@ const addUpdateTempPrefs = () => {
 
       let preferences = [];
       querySnapshot.forEach((doc) => {
-          console.log(doc.id);
-          preferences.push({ id: doc.id, ...doc.data() });
+          preferences.push(doc);
       });
-      console.log(preferences);
-
       return preferences;
     } catch (error) {
       console.error("Erreur lors de la récupération des préférences :", error);
@@ -203,6 +255,13 @@ const addUpdateTempPrefs = () => {
           />
         </View>
       </View>
+
+      {isLoading && (
+        <View style={loadingStyles.overlay}>
+          <ActivityIndicator size="large" color={darkMode ? '#84DCC6' : '#4B4E6D'} />
+        </View>
+      )}
+
       <Toast position='top' bottomOffset={20} />
     </View>
   )
@@ -265,5 +324,14 @@ const styles = {
     color:'white'
   }
 }
+
+const loadingStyles = StyleSheet.create({
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default addUpdateTempPrefs
