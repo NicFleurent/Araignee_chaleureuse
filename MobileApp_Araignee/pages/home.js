@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, ScrollView, Alert } from 'react-native';
-import Configuration from '../composants/Configuration';
+import Configuration from '../components/Configuration';
 import { useDispatch, useSelector } from 'react-redux';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../api/firebase';
@@ -9,12 +9,13 @@ import { useTranslation } from 'react-i18next';
 import { getLocalUser } from '../api/secureStore';
 import { useNavigation } from '@react-navigation/native';
 import { setRefreshHome } from '../stores/sliceRefresh';
+import Toast from 'react-native-toast-message';
 
 const Home = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const refreshHome = useSelector((state) => state.refresh.refreshHome);
-  const darkMode = useSelector((state) => state.parameters.darkmode); 
+  const darkMode = useSelector((state) => state.parameters.darkmode);
   const [tempPrefs, setTempsPrefs] = useState([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -55,6 +56,11 @@ const Home = () => {
           dispatch(setRefreshHome(false));
         }
       } catch (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Erreur',
+          text2: 'Erreur lors de la récupération.'
+        });
         console.log("Erreur lors de la récupération : " + error);
       } finally {
         setLoading(false);
@@ -78,9 +84,19 @@ const Home = () => {
           onPress: async () => {
             try {
               await deleteDoc(doc(db, "comfort_preferences", id));
+              Toast.show({
+                type: 'success',
+                text1: 'Succès',
+                text2: 'Configuration supprimé avec succès.'
+              });
               console.log("Document supprimé avec succès");
               setTempsPrefs((prev) => prev.filter((item) => item.id !== id));
             } catch (error) {
+              Toast.show({
+                type: 'error',
+                text1: 'Erreur',
+                text2: 'Erreur lors de la suppression.'
+              });
               console.log("Erreur lors de la suppression : " + error);
             }
           },
@@ -117,7 +133,6 @@ const Home = () => {
                   isActive={item.active}
                   onDelete={() => deletePrefs(item.id)}
                   onEdit={() => navigation.navigate("addUpdateTempPrefs", { item: item })}
-                  //darkMode={true} 
                 />
               ))
             ) : (
@@ -127,6 +142,7 @@ const Home = () => {
             )}
           </ScrollView>
         </View>
+        <Toast position='top'/>
       </View>
     </SafeAreaView>
   );

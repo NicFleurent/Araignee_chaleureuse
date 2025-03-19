@@ -1,18 +1,30 @@
-import React, { useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowUp, faSquare, faArrowDown, faRotateLeft, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faSquare, faArrowDown, faRotateLeft, faRotateRight, faSpider } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../api/firebase';
 import init from 'react_native_mqtt';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StandardButton from '../components/StandardButton';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux'; 
+import { setRefreshHome } from '../stores/sliceRefresh';
+import Toast from 'react-native-toast-message';
+import { getLocalUser } from '../api/secureStore';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const Scan = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const darkMode = useSelector((state) => state.parameters.darkmode); 
+  const [conf, setConf] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [isRobotEnable, setIsRobotEnable] = useState(true);
+  const [isCollisionDetected, setIsCollisionDetected] = useState(false);
+  const [isDangerousGaz, setIsDangerousGaz] = useState(false);
+  const unit = useSelector((state) => state.parameters.temperature_humidity_unit);
   const clientRef = useRef(null);
 
   useEffect(() => {
@@ -36,28 +48,115 @@ const Scan = () => {
       });
   }, [navigation, darkMode]);
 
+  useEffect(() => {
+    const getPrefs = async () => {
+      setLoading(true);
+      const user = await getLocalUser();
+      try {
+        const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
+        querySnapshot.forEach((doc) => {
+          if (doc.data().userId === user.data.uid && doc.data().active == true ) {
+            setConf(doc.data());
+          }
+        });
+
+      } catch (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Erreur',
+          text2: 'Erreur lors de la récupération.'
+        });
+        console.log("Erreur lors de la récupération : " + error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getPrefs();
+  }, []);
 
   const COLORS = {
     primary: darkMode ? '#84DCC6' : '#4B4E6D',
     secondary: darkMode ? '#FFFFFF' : '#4B4E6D',
     textDark: darkMode ? '#FFFFFF' : '#4B4E6D',
     white: darkMode ? '#15202B' : '#FFFFFF',
+    iconGray: darkMode ? '#A3A3A3' : '#737373',
+  };
+
+  const fahrenheitToCelsius = (fahrenheit) => {
+    return ((fahrenheit - 32) * 5 / 9).toFixed(1);
+  };
+
+  const celsiusToFahrenheit = (celsius) => {
+    return ((celsius * 9 / 5) + 32).toFixed(1);
   };
 
   const onConnect = useCallback(() => {
-    console.log("onConnect");
+    console.log("Connected");
+    clientRef.current.publish("spider_app", "start_detections", 0, false);
     clientRef.current.subscribe("spider_object");
   }, []);
 
   const onConnectionLost = useCallback((responseObject) => {
     if (responseObject.errorCode !== 0) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
+      showAlert("La connection au robot a ete perdue.");
+      navigation.goBack();
     }
   }, []);
 
   const onMessageArrived = useCallback((message) => {
-    console.log("onMessageArrived:" + message.payloadString);
-  }, []);
+    console.log("onMessageArrived:", message.payloadString);
+    
+    try {
+        const response = JSON.parse(message.payloadString);
+        
+        if (response.climat) {
+            setConf(response.climat);
+        }
+
+        if (response.robotEnabled !== undefined) {
+            setIsRobotEnable(response.robotEnabled);
+            showAlert(response.robotEnabled ? "Le robot est droit." : "Le robot est sur le côté.");
+        }
+
+        if (response.collision !== undefined) {
+            setIsCollisionDetected(response.collision);
+            showAlert(response.collision ? "Il y a un obstacle devant le robot." : "Il n'y a plus d'obstacle devant le robot.");
+        }
+
+        if (response.dangerous_gas !== undefined) {
+            setIsDangerousGaz(response.dangerous_gas);
+            showAlert(response.dangerous_gas ? "Un gaz dangereux a été détecté." : "Le robot ne détecte plus de gaz dangereux.");
+        }
+
+        if (response.final_spot !== undefined) {
+          console.log(response.final_spot["temperature"]);
+          console.log(response.final_spot["humidity"]);
+
+          temperature = response.final_spot["temperature"];
+          humidity = response.final_spot["humidity"];
+          navigation.reset({
+            index:0,
+            routes:[
+              {
+                name:'closeScan',
+                params:{
+                  temperature: temperature,
+                  humidity: humidity
+                },
+              }
+            ]
+          });
+      }
+    } catch (error) {
+        console.error("Erreur lors du parsing du message MQTT:", error);
+    }
+}, []);
+
+  const showAlert = (message) => {
+    alert(message);
+  };
 
   useEffect(() => {
     init({
@@ -82,13 +181,12 @@ const Scan = () => {
   }, [onConnect, onConnectionLost, onMessageArrived]);
 
   const publish = useCallback((command) => {
-    console.log(command);
-    // clientRef.current.publish("spider_app", command, 0, false);
+    clientRef.current.publish("spider_app", command, 0, false);
   }, []);
 
-  const ControlIcon = ({ icon, onPress }) => (
-    <TouchableOpacity onPress={onPress}>
-      <FontAwesomeIcon size={80} color={COLORS.secondary} icon={icon} />
+  const ControlIcon = ({ icon, onPress, disabled }) => (
+    <TouchableOpacity disabled={disabled} onPress={onPress}>
+      <FontAwesomeIcon size={80} color={disabled ? COLORS.iconGray : COLORS.secondary} icon={icon} />
     </TouchableOpacity>
   );
 
@@ -98,7 +196,17 @@ const Scan = () => {
         <View style={styles.buttonWrapper}>
           <StandardButton
             label={t('scan.stop')}
-            onPress={() => publish("arret")}
+            onPress={() => {
+              publish("cancel");
+              navigation.reset({
+                index:0,
+                routes:[
+                  {
+                    name:'launchScan',
+                  }
+                ]
+              });
+            }}
           />
         </View>
         <View style={styles.buttonWrapper}>
@@ -106,8 +214,7 @@ const Scan = () => {
             label={t('scan.finish')}
             color="green"
             onPress={() => {
-              publish("arret");
-              navigation.navigate("closeScan");
+              publish("finish");
             }}
           />
         </View>
@@ -115,26 +222,23 @@ const Scan = () => {
 
       <View style={styles.dataContainer}>
         <View style={styles.dataItem}>
-          <Text style={[styles.dataText, { color: COLORS.textDark }]}>-9°C</Text>
+          {unit == "farenheit" && <Text style={[styles.dataText, { color: COLORS.textDark }]}>{celsiusToFahrenheit(conf.temperature)}°F</Text> || <Text style={[styles.dataText, { color: COLORS.textDark }]}>{conf.temperature}°C</Text>}
         </View>
         <View style={styles.dataItem}>
-          <Text style={[styles.dataText, { color: COLORS.textDark }]}>80%</Text>
+          <Text style={[styles.dataText, { color: COLORS.textDark }]}>{conf.humidity}%</Text>
         </View>
-      </View>
-
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
 
       <View style={styles.controlsContainer}>
-        <ControlIcon icon={faArrowUp} onPress={() => publish("haut")} />
+        <ControlIcon disabled={isCollisionDetected || !isRobotEnable} icon={faArrowUp} onPress={() => publish("forward")} />
         <View style={styles.controlRow}>
-          <ControlIcon icon={faRotateLeft} onPress={() => publish("gauche")} />
-          <ControlIcon icon={faSquare} onPress={() => publish("arret")} />
-          <ControlIcon icon={faRotateRight} onPress={() => publish("droit")} />
+          <ControlIcon disabled={!isRobotEnable} icon={faRotateLeft} onPress={() => publish("turn_left")} />
+          <ControlIcon disabled={!isRobotEnable} icon={faSpider} onPress={() => publish("stand")} />
+          <ControlIcon disabled={!isRobotEnable} icon={faRotateRight} onPress={() => publish("turn_right")} />
         </View>
-        <ControlIcon icon={faArrowDown} onPress={() => publish("bas")} />
+        <ControlIcon disabled={!isRobotEnable} icon={faArrowDown} onPress={() => publish("backward")} />
       </View>
+      <Toast position='top'/>
     </View>
   );
 };
@@ -164,10 +268,6 @@ const styles = StyleSheet.create({
   dataText: {
     fontSize: 36,
     fontWeight: 'bold',
-  },
-  loaderContainer: {
-    marginVertical: 40,
-    alignItems: 'center',
   },
   controlsContainer: {
     alignItems: 'center',

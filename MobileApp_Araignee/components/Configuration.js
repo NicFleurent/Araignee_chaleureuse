@@ -17,6 +17,7 @@ const COLORS = {
 
 const Configuration = ({ season, temperature, humidity, isActive, onDelete, onEdit }) => {
   const darkMode = useSelector((state) => state.parameters.darkmode);
+  const unit = useSelector((state) => state.parameters.temperature_humidity_unit);
 
   const dynamicStyles = {
     container: {
@@ -47,6 +48,11 @@ const Configuration = ({ season, temperature, humidity, isActive, onDelete, onEd
     },
   };
 
+  function celsiusToFahrenheit(celsius) {
+    return (celsius * 9/5) + 32;
+  }
+
+
   return (
     <View style={[styles.container, dynamicStyles.container]}>
       <View style={styles.header}>
@@ -54,7 +60,8 @@ const Configuration = ({ season, temperature, humidity, isActive, onDelete, onEd
           {season}
         </Text>
         <View style={styles.valuesContainer}>
-          <Text style={[styles.value, dynamicStyles.value]}>{temperature}°C</Text>
+          {unit == "farenheit" && <Text style={[styles.value, dynamicStyles.value]}>{celsiusToFahrenheit(temperature) + "°F"}</Text> || <Text style={[styles.value, dynamicStyles.value]}>{temperature}°C</Text>}
+          
           <Text style={[styles.value, styles.marginTop, dynamicStyles.value]}>
             {humidity}%
           </Text>

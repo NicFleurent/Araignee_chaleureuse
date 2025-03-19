@@ -96,7 +96,7 @@ export default function App() {
             </View>
           );
         },
-        tabBarActiveTintColor: darkMode ? "#FFFFFF" : "#4B4E6D",
+        tabBarActiveTintColor: darkMode ? "#15202B" : "#4B4E6D",
         tabBarInactiveTintColor: darkMode ? "#A9A9A9" : "lightgray",
         tabBarShowLabel: false,
         tabBarLabelPosition: "beside-icon",
