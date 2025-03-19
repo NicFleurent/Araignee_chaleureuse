@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-const CloseScan = () => {
+const CloseScan = ({route}) => {
   const { t } = useTranslation();
   const darkMode = useSelector((state) => state.parameters.darkmode);
   const navigation = useNavigation();
+
+  const {temperature, humidity} = route.params; 
 
   const COLORS = {
     primary: darkMode ? '#84DCC6' : '#4B4E6D',
@@ -75,12 +77,35 @@ const CloseScan = () => {
   }, [navigation, darkMode]);
 
   const handleLaunchScan = useCallback(() => {
-    console.log("Lancement du scan");
+    navigation.reset({
+      index:0,
+      routes:[
+        {
+          name:'Menu',
+          params:{screen:'scanStack'}
+        }
+      ]
+    })
   }, []);
+  
 
   const handleReturnHome = useCallback(() => {
-    console.log("Retour à l'accueil");
+    navigation.reset({
+      index:0,
+      routes:[
+        {
+          name:'Menu',
+          params:{screen:'Home'}
+        }
+      ]
+    })
   }, []);
+
+  const celsiusToFahrenheit = (celsius) => {
+    return ((celsius * 9 / 5) + 32).toFixed(1);
+  };
+
+  const unit = useSelector((state) => state.parameters.temperature_humidity_unit);
 
   const StatItem = ({ label, value }) => (
     <View style={styles.statItem}>
@@ -95,8 +120,9 @@ const CloseScan = () => {
 
       <View style={styles.content}>
         <View style={styles.statsContainer}>
-          <StatItem label={t('closeScan.temperature')} value="20°C" />
-          <StatItem label={t('closeScan.humidity')} value="80%" />
+          {unit == "farenheit" && <StatItem label={t('closeScan.temperature')} value= {celsiusToFahrenheit(temperature) + "°F"} /> || <StatItem label={t('closeScan.temperature')} value= {temperature + "°C"} />}
+          
+          <StatItem label={t('closeScan.humidity')} value={humidity+"%"} />
         </View>
 
         <View style={styles.buttonsContainer}>

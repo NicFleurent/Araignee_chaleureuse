@@ -80,7 +80,7 @@
     "finish": "Terminer"
   },
   "closeScan": {
-    "title": "Veuillez laisser spidy retourner au lieu indiqué",
+    "title": "Veuillez rejoindre Spidey au lieu indiqué",
     "temperature": "Température",
     "humidity": "Humidité",
     "return_home": "Retour à l’accueil",

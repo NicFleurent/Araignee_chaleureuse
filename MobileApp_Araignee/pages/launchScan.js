@@ -80,7 +80,14 @@ const LaunchScan = () => {
     //   text2: t('launchScan.toast_message'),
     // });
 
-    navigation.navigate('scan');
+    navigation.reset({
+      index:0,
+      routes:[
+        {
+          name:'scan'
+        }
+      ]
+    })
   };
 
   return (
