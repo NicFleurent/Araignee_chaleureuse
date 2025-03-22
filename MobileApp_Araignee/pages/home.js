@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, ScrollView, Alert, FlatList } from 'react-native';
 import Configuration from '../components/Configuration';
 import { useDispatch, useSelector } from 'react-redux';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
@@ -107,6 +107,17 @@ const Home = () => {
     );
   };
 
+  const renderItem = ({ item }) => (
+    <Configuration
+      key={item.id}
+      season={item.name}
+      temperature={item.temperature}
+      humidity={item.humidity}
+      isActive={item.active}
+      onDelete={() => deletePrefs(item.id)}
+      onEdit={() => navigation.navigate("addUpdateTempPrefs", { item: item })}/>
+  );
+
   return (
     <SafeAreaView style={[styles.container, darkMode && styles.containerDarkmode]}>
       <View style={styles.content}>
@@ -120,27 +131,16 @@ const Home = () => {
         </View>
 
         <View style={styles.configurationsContainer}>
-          <ScrollView>
-            {loading ? (
-              <ActivityIndicator size="large" color={darkMode ? '#84DCC6' : '#4B4E6D'} />
-            ) : tempPrefs.length > 0 ? (
-              tempPrefs.map((item) => (
-                <Configuration
-                  key={item.id}
-                  season={item.name}
-                  temperature={item.temperature}
-                  humidity={item.humidity}
-                  isActive={item.active}
-                  onDelete={() => deletePrefs(item.id)}
-                  onEdit={() => navigation.navigate("addUpdateTempPrefs", { item: item })}
-                />
-              ))
-            ) : (
-              <Text style={[styles.noConfigurationsText, darkMode && styles.noConfigurationsTextDarkmode]}>
-                {t('home.no_configurations_found')}
-              </Text>
-            )}
-          </ScrollView>
+          {loading ? (
+            <ActivityIndicator size="large" color="#4B4E6D" />
+          ) : (
+            <FlatList
+              data={tempPrefs}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              ListEmptyComponent={<Text>{t('home.no_configurations_found')}</Text>}
+            />
+          )}
         </View>
         <Toast position='top'/>
       </View>
