@@ -55,6 +55,7 @@ const addUpdateTempPrefs = ({route}) => {
   useEffect(() => {
       if(darkMode)
         navigation.setOptions({
+          title: route.params?.item ? route.params.item.name : t('addUpdate.title'),
           headerStyle: {
               backgroundColor: '#15202B',
           },
