@@ -46,9 +46,13 @@ const addUpdateTempPrefs = ({route}) => {
       setHumidity(item.humidity)
 
       let fahrenheitTemp;
-      if(temperatureUnit === "farenheit")
+      if(temperatureUnit === "farenheit"){
         fahrenheitTemp = celsiusToFahrenheit(item.temperature);
-      setTemperature(fahrenheitTemp);
+        setTemperature(fahrenheitTemp);
+      }else{
+        setTemperature(item.temperature);
+      }
+      
     }
   }, [route])
 

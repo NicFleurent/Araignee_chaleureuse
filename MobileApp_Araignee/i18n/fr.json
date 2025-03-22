@@ -77,7 +77,14 @@
   "scan": {
     "title": "Scan",
     "stop": "Arrêter",
-    "finish": "Terminer"
+    "finish": "Terminer",
+    "robot_upright": "Le robot est droit.",
+    "robot_on_side": "Le robot est sur le côté.",
+    "collision_detected": "Il y a un obstacle devant le robot.",
+    "collision_cleared": "Il n'y a plus d'obstacle devant le robot.",
+    "dangerous_gas_detected": "Un gaz dangereux a été détecté.",
+    "dangerous_gas_cleared": "Le robot ne détecte plus de gaz dangereux.",
+    "connection_lost": "La connexion au robot a été perdue."
   },
   "closeScan": {
     "title": "Veuillez rejoindre Spidey au lieu indiqué",

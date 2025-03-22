@@ -10,10 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import StandardButton from '../components/StandardButton';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux'; 
-import { setRefreshHome } from '../stores/sliceRefresh';
 import Toast from 'react-native-toast-message';
 import { getLocalUser } from '../api/secureStore';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const Scan = () => {
   const navigation = useNavigation();
@@ -28,24 +26,25 @@ const Scan = () => {
   const clientRef = useRef(null);
 
   useEffect(() => {
-    if(darkMode)
+    if (darkMode) {
       navigation.setOptions({
         headerStyle: {
-            backgroundColor: '#15202B',
+          backgroundColor: '#15202B',
         },
-        headerTintColor:'#fff',
+        headerTintColor: '#fff',
         tabBarActiveBackgroundColor: "#15202B",
         tabBarInactiveBackgroundColor: "#15202B",
       });
-    else
+    } else {
       navigation.setOptions({
         headerStyle: {
-            backgroundColor: '#fff',
+          backgroundColor: '#fff',
         },
-        headerTintColor:'#000',
+        headerTintColor: '#000',
         tabBarActiveBackgroundColor: "#fff",
         tabBarInactiveBackgroundColor: "#fff",
       });
+    }
   }, [navigation, darkMode]);
 
   useEffect(() => {
@@ -55,16 +54,15 @@ const Scan = () => {
       try {
         const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
         querySnapshot.forEach((doc) => {
-          if (doc.data().userId === user.data.uid && doc.data().active == true ) {
+          if (doc.data().userId === user.data.uid && doc.data().active == true) {
             setConf(doc.data());
           }
         });
-
       } catch (error) {
         Toast.show({
           type: 'error',
-          text1: 'Erreur',
-          text2: 'Erreur lors de la récupération.'
+          text1: t('error'),
+          text2: t('asyncStorage.get_error'),
         });
         console.log("Erreur lors de la récupération : " + error);
       } finally {
@@ -83,14 +81,6 @@ const Scan = () => {
     iconGray: darkMode ? '#A3A3A3' : '#737373',
   };
 
-  const fahrenheitToCelsius = (fahrenheit) => {
-    return ((fahrenheit - 32) * 5 / 9).toFixed(1);
-  };
-
-  const celsiusToFahrenheit = (celsius) => {
-    return ((celsius * 9 / 5) + 32).toFixed(1);
-  };
-
   const onConnect = useCallback(() => {
     console.log("Connected");
     clientRef.current.publish("spider_app", "start_detections", 0, false);
@@ -100,7 +90,7 @@ const Scan = () => {
   const onConnectionLost = useCallback((responseObject) => {
     if (responseObject.errorCode !== 0) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
-      showAlert("La connection au robot a ete perdue.");
+      showAlert(t('scan.connection_lost'));
       navigation.goBack();
     }
   }, []);
@@ -109,53 +99,48 @@ const Scan = () => {
     console.log("onMessageArrived:", message.payloadString);
     
     try {
-        const response = JSON.parse(message.payloadString);
-        
-        if (response.climat) {
-            setConf(response.climat);
-        }
+      const response = JSON.parse(message.payloadString);
+      
+      if (response.climat) {
+        setConf(response.climat);
+      }
 
-        if (response.robotEnabled !== undefined) {
-            setIsRobotEnable(response.robotEnabled);
-            showAlert(response.robotEnabled ? "Le robot est droit." : "Le robot est sur le côté.");
-        }
+      if (response.robotEnabled !== undefined) {
+        setIsRobotEnable(response.robotEnabled);
+        showAlert(response.robotEnabled ? t('scan.robot_upright') : t('scan.robot_on_side'));
+      }
 
-        if (response.collision !== undefined) {
-            setIsCollisionDetected(response.collision);
-            showAlert(response.collision ? "Il y a un obstacle devant le robot." : "Il n'y a plus d'obstacle devant le robot.");
-        }
+      if (response.collision !== undefined) {
+        setIsCollisionDetected(response.collision);
+        showAlert(response.collision ? t('scan.collision_detected') : t('scan.collision_cleared'));
+      }
 
-        if (response.dangerous_gas !== undefined) {
-            setIsDangerousGaz(response.dangerous_gas);
-            showAlert(response.dangerous_gas ? "Un gaz dangereux a été détecté." : "Le robot ne détecte plus de gaz dangereux.");
-        }
+      if (response.dangerous_gas !== undefined) {
+        setIsDangerousGaz(response.dangerous_gas);
+        showAlert(response.dangerous_gas ? t('scan.dangerous_gas_detected') : t('scan.dangerous_gas_cleared'));
+      }
 
-        if (response.final_spot !== undefined) {
-          console.log(response.final_spot["temperature"]);
-          console.log(response.final_spot["humidity"]);
-
-          temperature = response.final_spot["temperature"];
-          humidity = response.final_spot["humidity"];
-          navigation.reset({
-            index:0,
-            routes:[
-              {
-                name:'closeScan',
-                params:{
-                  temperature: temperature,
-                  humidity: humidity
-                },
-              }
-            ]
-          });
+      if (response.final_spot !== undefined) {
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'closeScan',
+              params: {
+                temperature: response.final_spot["temperature"],
+                humidity: response.final_spot["humidity"],
+              },
+            },
+          ],
+        });
       }
     } catch (error) {
-        console.error("Erreur lors du parsing du message MQTT:", error);
+      console.error("Erreur lors du parsing du message MQTT:", error);
     }
-}, []);
+  }, []);
 
   const showAlert = (message) => {
-    alert(message);
+    Alert.alert(t('error'), message);
   };
 
   useEffect(() => {
@@ -199,12 +184,12 @@ const Scan = () => {
             onPress={() => {
               publish("cancel");
               navigation.reset({
-                index:0,
-                routes:[
+                index: 0,
+                routes: [
                   {
-                    name:'launchScan',
-                  }
-                ]
+                    name: 'launchScan',
+                  },
+                ],
               });
             }}
           />
@@ -222,7 +207,9 @@ const Scan = () => {
 
       <View style={styles.dataContainer}>
         <View style={styles.dataItem}>
-          {unit == "farenheit" && <Text style={[styles.dataText, { color: COLORS.textDark }]}>{celsiusToFahrenheit(conf.temperature)}°F</Text> || <Text style={[styles.dataText, { color: COLORS.textDark }]}>{conf.temperature}°C</Text>}
+          <Text style={[styles.dataText, { color: COLORS.textDark }]}>
+            {unit === "fahrenheit" ? celsiusToFahrenheit(conf.temperature) + "°F" : conf.temperature + "°C"}
+          </Text>
         </View>
         <View style={styles.dataItem}>
           <Text style={[styles.dataText, { color: COLORS.textDark }]}>{conf.humidity}%</Text>
@@ -238,7 +225,7 @@ const Scan = () => {
         </View>
         <ControlIcon disabled={!isRobotEnable} icon={faArrowDown} onPress={() => publish("backward")} />
       </View>
-      <Toast position='top'/>
+      <Toast position='top' />
     </View>
   );
 };
