@@ -90,7 +90,7 @@ const Scan = () => {
   const onConnectionLost = useCallback((responseObject) => {
     if (responseObject.errorCode !== 0) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
-      showAlert(t('scan.connection_lost'));
+      showAlertError(t('scan.connection_lost'));
       navigation.goBack();
     }
   }, []);
@@ -107,17 +107,17 @@ const Scan = () => {
 
       if (response.robotEnabled !== undefined) {
         setIsRobotEnable(response.robotEnabled);
-        showAlert(response.robotEnabled ? t('scan.robot_upright') : t('scan.robot_on_side'));
+        showAlertError(response.robotEnabled ? t('scan.robot_upright') : t('scan.robot_on_side'));
       }
 
       if (response.collision !== undefined) {
         setIsCollisionDetected(response.collision);
-        showAlert(response.collision ? t('scan.collision_detected') : t('scan.collision_cleared'));
+        showAlertError(response.collision ? t('scan.collision_detected') : t('scan.collision_cleared'));
       }
 
       if (response.dangerous_gas !== undefined) {
         setIsDangerousGaz(response.dangerous_gas);
-        showAlert(response.dangerous_gas ? t('scan.dangerous_gas_detected') : t('scan.dangerous_gas_cleared'));
+        showAlertError(response.dangerous_gas ? t('scan.dangerous_gas_detected') : t('scan.dangerous_gas_cleared'));
       }
 
       if (response.final_spot !== undefined) {
@@ -132,15 +132,19 @@ const Scan = () => {
               },
             },
           ],
-        });
+        }); 
       }
     } catch (error) {
       console.error("Erreur lors du parsing du message MQTT:", error);
     }
   }, []);
 
-  const showAlert = (message) => {
+  const showAlertError = (message) => {
     Alert.alert(t('error'), message);
+  };
+
+  const showAlertSuccess = (message) => {
+    Alert.alert(t('warning'), message);
   };
 
   useEffect(() => {
@@ -200,6 +204,8 @@ const Scan = () => {
             color="green"
             onPress={() => {
               publish("finish");
+              setIsRobotEnable(false);
+              showAlertSuccess(t('closeScan.title'));
             }}
           />
         </View>
