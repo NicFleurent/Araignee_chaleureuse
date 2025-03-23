@@ -1,5 +1,3 @@
-//TODO::Ajuster le responsive pour la tablette
-
 import { View, Text, Image, Switch, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
@@ -10,7 +8,6 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../api/firebase';
 import { saveLocalUser } from '../api/secureStore';
 import Toast from 'react-native-toast-message';
-import { defineScreen } from '../stores/sliceScreen';
 import { useSelector } from 'react-redux';
 
 const signup = () => {

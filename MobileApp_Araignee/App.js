@@ -2,8 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Pressable, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import home from './pages/home';
 import launchScan from './pages/launchScan';
@@ -12,9 +11,6 @@ import login from './pages/login';
 import signup from './pages/signup';
 import scan from './pages/scan';
 import closeScan from './pages/closeScan';
-import { db } from './api/firebase';
-import { useEffect } from 'react';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { faGear, faRobot, faTemperatureLow } from '@fortawesome/free-solid-svg-icons';
 import "./i18n.js";
 import { useTranslation } from 'react-i18next';
@@ -24,26 +20,6 @@ import addUpdateTempPrefs from './pages/tempPrefs/addUpdateTempPrefs.js';
 
 export default function App() {
   const {t} = useTranslation();
-
-  // useEffect(()=>{
-  //   const getPrefs = async () => {
-  //     const docRef = doc(db, "comfort_preferences","2DXgYow1rPELwUrwnM33");
-  //     const docSnap = await getDoc(docRef)
-  //     console.log(docSnap.data())
-  //   }
-  //   getPrefs();
-  // },[])
-
-  // useEffect(()=>{
-  //   const getPrefs = async () => {
-  //     const querySnapshot = await getDocs(collection(db, "comfort_preferences"));
-  //     querySnapshot.forEach((doc) => {
-  //       console.log(`${doc.id} => ${doc.data()}`);
-  //       console.log(doc.data())
-  //     });
-  //   }
-  //   getPrefs();
-  // },[])
 
   const scanStack = createNativeStackNavigator({
     initialRouteName:"launchScan",
