@@ -1,5 +1,6 @@
 {
   "error": "Error",
+  "warning": "Warning",
   "yes": "Yes",
   "no": "No",
   "auth": {
@@ -87,7 +88,7 @@
     "connection_lost": "The connection to the robot has been lost."
   },
   "closeScan": {
-    "title": "Please join Spidey at the indicated location",
+    "title": "The place at Spidy is the one that best matches your preferences 🎉",
     "temperature": "Temperature",
     "humidity": "Humidity",
     "return_home": "Return to Home",
