@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowUp, faSquare, faArrowDown, faRotateLeft, faRotateRight, faSpider } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown, faRotateLeft, faRotateRight, faSpider } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../api/firebase';

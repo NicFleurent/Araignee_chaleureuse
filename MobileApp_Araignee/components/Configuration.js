@@ -56,7 +56,7 @@ const Configuration = ({ season, temperature, humidity, isActive, onDelete, onEd
   return (
     <View style={[styles.container, dynamicStyles.container]}>
       <View style={styles.header}>
-        <Text numberOfLines={1} style={[styles.title, dynamicStyles.title]}>
+        <Text numberOfLines={2} style={[styles.title, dynamicStyles.title]}>
           {season}
         </Text>
         <View style={styles.valuesContainer}>
